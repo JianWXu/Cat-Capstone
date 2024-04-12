@@ -101,14 +101,14 @@ class User {
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
 
-    const userApplicationsRes = await db.query(
-      `SELECT a.job_id
-           FROM applications AS a
-           WHERE a.username = $1`,
+    const catsOwned = await db.query(
+      `SELECT cat_id
+           FROM cats AS a
+           WHERE user = $1`,
       [username]
     );
 
-    user.applications = userApplicationsRes.rows.map(a => a.job_id);
+    user.cats = catsOwned.rows.map(c => c.cat_id);
     return user;
   }
 
@@ -118,9 +118,9 @@ class User {
     }
 
     const { setCols, values } = sqlForPartialUpdate(data, {
+      username: "username",
       firstName: "first_name",
       lastName: "last_name",
-      isAdmin: "is_admin",
     });
     const usernameVarIdx = "$" + (values.length + 1);
 
@@ -130,8 +130,7 @@ class User {
                       RETURNING username,
                                 first_name AS "firstName",
                                 last_name AS "lastName",
-                                email,
-                                is_admin AS "isAdmin"`;
+                                email`;
     const result = await db.query(querySql, [...values, username]);
     const user = result.rows[0];
 
@@ -188,6 +187,5 @@ class User {
     );
   }
 }
-
 
 module.exports = User;

@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 25
+    },
+    "breed": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "outdoor": {
+      "type": "boolean"
+    },
+    "friendly": {
+      "type": "boolean"
+    },
+    "picture": {
+      "type": "object",
+      "$ref": "#/definitions/Picture"
+    }
+  },
+  "definitions": {
+    "Picture": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "description": {
+          "type": "string"
+        },
+        "file_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "file_path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "upload_date": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["title", "file_name", "file_path"]
+    }
+  },
+  "additionalProperties": false
+}
