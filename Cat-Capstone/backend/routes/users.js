@@ -8,7 +8,7 @@ const express = require("express");
 const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
-const Cat = requre("../models/cat");
+const Cat = require("../models/cat");
 const { createToken } = require("../helpers/tokens");
 const userNewSchema = require("../schemas/userNewSchema.json");
 const userUpdateSchema = require("../schemas/userUpdateSchema.json");
@@ -164,7 +164,7 @@ router.post(
   async function (req, res, next) {
     try {
       const catId = +req.params.id;
-      await User.addCat(req.params.username, catId);
+      await Cat.create(req.params.username, catId);
       return res.json({ added: catId });
     } catch (err) {
       return next(err);

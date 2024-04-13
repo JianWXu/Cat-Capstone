@@ -4,11 +4,44 @@ const db = require("../db");
 const { NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 
-
 /** Related functions for cats. */
 
 class Cat {
-  static async create(data) {
+  // /** Add a cat, returns undefined.
+  //  *
+  //  * - username: username adding cat
+  //  * - catId: cat id
+  //  **/
+
+  // static async addCat(username, catId) {
+  //   const preCheck = await db.query(
+  //     `SELECT id
+  //       FROM cats
+  //       WHERE id=$1`,
+  //     [catId]
+  //   );
+  //   const cat = preCheck.rows[0];
+
+  //   if (!cat) throw new NotFoundError(`No cat: ${catId}`);
+
+  //   const preCheck2 = await db.query(
+  //     `SELECT username
+  //            FROM users
+  //            WHERE username = $1`,
+  //     [username]
+  //   );
+  //   const user = preCheck2.rows[0];
+
+  //   if (!user) throw new NotFoundError(`No username: ${username}`);
+
+  //   await db.query(
+  //     `INSERT INTO cat_owner (cat_id, username)
+  //        VALUES ($1, $2)`,
+  //     [catId, username]
+  //   );
+  // }
+
+  static async create(username, data) {
     // Insert picture into pictures table
     const picResult = await db.query(
       `INSERT INTO pictures (picture_id,
@@ -32,14 +65,7 @@ class Cat {
                                 friendly )
             VALUES ($1,$2,$3,$4,$5,$6,$7)
             RETURNING id, username, name, breed, age, outdoor, friendly`,
-      [
-        data.name,
-        data.username,
-        data.breed,
-        data.age,
-        data.outdoor,
-        data.friendly,
-      ]
+      [data.name, username, data.breed, data.age, data.outdoor, data.friendly]
     );
 
     return catResult.rows[0];

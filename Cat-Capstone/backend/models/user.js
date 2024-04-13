@@ -153,39 +153,7 @@ class User {
     if (!user) throw new NotFoundError(`No user: ${username}`);
   }
 
-  /** Add a cat, returns undefined.
-   *
-   * - username: username adding cat
-   * - catId: cat id
-   **/
-
-  static async addCat(username, catId) {
-    const preCheck = await db.query(
-      `SELECT id
-        FROM cats
-        WHERE id=$1`,
-      [catId]
-    );
-    const cat = preCheck.rows[0];
-
-    if (!cat) throw new NotFoundError(`No cat: ${catId}`);
-
-    const preCheck2 = await db.query(
-      `SELECT username
-             FROM users
-             WHERE username = $1`,
-      [username]
-    );
-    const user = preCheck2.rows[0];
-
-    if (!user) throw new NotFoundError(`No username: ${username}`);
-
-    await db.query(
-      `INSERT INTO cat_owner (cat_id, username)
-         VALUES ($1, $2)`,
-      [catId, username]
-    );
-  }
+  
 }
 
 module.exports = User;
