@@ -82,8 +82,8 @@ function App() {
   return (
     <>
       
-      <SignIn/>
-      <SignUp/>
+      {shouldShowLogin() && (<SignIn authLoginInfo={authLoginInfo} shouldShowLogin={shouldShowLogin} />)}
+      {shouldShowSignUp() && (<SignUp signUp={signUp} shouldShowSignUp={shouldShowSignUp} />)}
     </>
   )
 }

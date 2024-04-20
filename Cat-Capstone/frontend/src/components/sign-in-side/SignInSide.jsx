@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useState, useContext} from "react";
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -58,7 +59,7 @@ ToggleCustomTheme.propTypes = {
   toggleCustomTheme: PropTypes.func.isRequired,
 };
 
-export default function SignInSide() {
+export default function SignInSide({authLoginInfo, shouldShowLogin} ) {
   const [mode, setMode] = React.useState('light');
   const [showCustomTheme, setShowCustomTheme] = React.useState(true);
   const defaultTheme = createTheme({ palette: { mode } });
@@ -114,7 +115,7 @@ export default function SignInSide() {
           sx={{ height: { xs: '100%', md: '100dvh' }, p: 2 }}
         >
           <Content />
-          <SignInCard />
+          <SignInCard authLoginInfo={authLoginInfo} shouldShowLogin={shouldShowLogin} />
         </Stack>
       </Stack>
       <ToggleCustomTheme

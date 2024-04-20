@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useState} from "react"
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -14,10 +15,15 @@ import Typography from '@mui/material/Typography';
 import ForgotPassword from './ForgotPassword';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './CustomIcons';
 
-export default function SignInCard() {
+export default function SignInCard({authLoginInfo, shouldShowLogin}) {
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
+  const INITIAL_STATE = {
+    username: "",
+    password: ""
+} 
+  const [formData, setFormData] = useState(INITIAL_STATE)
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -27,13 +33,29 @@ export default function SignInCard() {
     setOpen(false);
   };
 
-  const handleSubmit = (event) => {
+  const handleChange = e => {
+    const {name, value} = e.target
+    setFormData(data =>({
+        ...data,
+        [name]: value
+    }))
+}
+
+  const handleSubmit = async event => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      username: data.get('usename'),
-      password: data.get('password'),
-    });
+    // const data = new FormData(event.currentTarget);
+    try{
+      await authLoginInfo({...formData})
+      console.log("Login successful.")
+      console.log({
+        username: data.get('usename'),
+        password: data.get('password'),
+      });
+    } catch(err){
+      console.error("Error logging in", err)
+      console.log("Login unsuccessful")
+    }
+    
   };
 
   const validateInputs = () => {
@@ -56,7 +78,8 @@ export default function SignInCard() {
   };
 
   return (
-    <Card
+    <>
+    {shouldShowLogin && <Card
       sx={(theme) => ({
         display: 'flex',
         flexDirection: 'column',
@@ -104,6 +127,7 @@ export default function SignInCard() {
             fullWidth
             variant="outlined"
             color={'primary'}
+            onChange={handleChange}
             sx={{ ariaLabel: 'username' }}
           />
         </FormControl>
@@ -136,6 +160,7 @@ export default function SignInCard() {
             required
             fullWidth
             variant="outlined"
+            onChange={handleChange}
             color={passwordError ? 'error' : 'primary'}
           />
         </FormControl>
@@ -174,6 +199,9 @@ export default function SignInCard() {
           Sign in with Facebook
         </Button>
       </Box>
-    </Card>
+    </Card>}
+    
+    </>
+    
   );
 }

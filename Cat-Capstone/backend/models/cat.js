@@ -193,6 +193,28 @@ class Cat {
     return cat;
   }
 
+  static async getRandomCat(userId) {
+    //get total number of rows in cat table
+    const catRows = await db.query(`SELECT COUNT *  AS totalCats FROM cats`);
+    const totalCats = catRows[0].totalCats;
+
+    //loop til I find a unique catId that's not in Swiped table connected to the user
+    while (true) {
+      const randomCatId = Math.floor(Math.random() * totalCats) + 1;
+
+      const swipeRows = await db.query(
+        `
+        SELECT * FROM swipes WHERE userId=$1 AND catId=$2`,
+        [userId, randomCatId]
+      );
+
+      //if the catId doesn't exist in the swipes table for the current user, return it
+      if (swipesRows.length === 0) {
+        return randomCatId;
+      }
+    }
+  }
+
   static async update(id, data) {
     // Separate the picture data from the other data
     const { picture, ...catData } = data;

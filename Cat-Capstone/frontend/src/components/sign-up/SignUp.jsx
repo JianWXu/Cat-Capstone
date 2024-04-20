@@ -1,4 +1,6 @@
 import * as React from 'react';
+import {useState, useContext} from "react";
+import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -67,7 +69,17 @@ ToggleCustomTheme.propTypes = {
   toggleCustomTheme: PropTypes.func.isRequired,
 };
 
-export default function SignUp() {
+export default function SignUp({signUp, shouldShowSignUp}) {
+
+  const INITIAL_STATE = {
+    username: "",
+    password: "",
+    fName: "",
+    lName: "",
+    email: ""
+}
+
+  const [formData, setFormData] = useState(INITIAL_STATE)
   const [mode, setMode] = React.useState('light');
   const [showCustomTheme, setShowCustomTheme] = React.useState(true);
   const defaultTheme = createTheme({ palette: { mode } });
@@ -76,13 +88,18 @@ export default function SignUp() {
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const [nameError, setNameError] = React.useState(false);
+  const [fnameError, setfNameError] = React.useState(false);
+  const [lnameError, setlNameError] = React.useState(false);
+  const [usernameError, setUsernameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState('');
+  const [usernameErrorMessage, setUsernameErrorMessage] = React.useState('');
 
   const validateInputs = () => {
     const email = document.getElementById('email');
     const password = document.getElementById('password');
-    const name = document.getElementById('name');
+    const fName = document.getElementById('firstName');
+    const lName = document.getElementById('lastName')
+    const username = document.getElementById('username')
 
     let isValid = true;
 
@@ -104,15 +121,33 @@ export default function SignUp() {
       setPasswordErrorMessage('');
     }
 
-    if (!name.value || name.value.length < 1) {
-      setNameError(true);
-      setNameErrorMessage('Name is required.');
+    if (!fName.value || fName.value.length < 1) {
+      setfNameError(true);
+      setNameErrorMessage('First Name is required.');
       isValid = false;
     } else {
-      setNameError(false);
+      setfNameError(false);
       setNameErrorMessage('');
     }
 
+    if (!lName.value || lName.value.length < 1) {
+      setlNameError(true);
+      setNameErrorMessage('Name is required.');
+      isValid = false;
+    } else {
+      setlNameError(false);
+      setNameErrorMessage('');
+    }
+
+    if (!username.value || username.value.length < 1) {
+      setUsernameError(true);
+      setUsernameErrorMessage('Name is required.');
+      isValid = false;
+    } else {
+      setUsernameError(false);
+      setUsernameErrorMessage('');
+    }
+    
     return isValid;
   };
 
@@ -124,19 +159,37 @@ export default function SignUp() {
     setShowCustomTheme((prev) => !prev);
   };
 
+  const handleChange = e => {
+    const {name, value} = e.target
+    setFormData(data => ({
+        ...data,
+        [name]: value
+    }))
+}
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get('name'),
-      lastName: data.get('lastName'),
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    // const data = new FormData(event.currentTarget);
+    try{
+      signUp({...formData})
+      console.log({
+        username: data.get('username'),
+        firstName: data.get('firstName'),
+        lastName: data.get('lastName'),
+        email: data.get('email'),
+        password: data.get('password'),
+      });
+    } catch(err){
+      console.err("Error signing up", err)
+      console.loog("signup unsuccessful")
+    }
+    
   };
 
   return (
-    <ThemeProvider theme={showCustomTheme ? SignUpTheme : defaultTheme}>
+    <>
+    {shouldShowSignUp && (
+      <ThemeProvider theme={showCustomTheme ? SignUpTheme : defaultTheme}>
       <CssBaseline />
       <Stack
         component="main"
@@ -201,17 +254,48 @@ export default function SignUp() {
               sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
             >
               <FormControl>
-                <FormLabel htmlFor="name">Full name</FormLabel>
+                <FormLabel htmlFor="username">Username</FormLabel>
                 <TextField
-                  autoComplete="name"
-                  name="name"
+                  autoComplete="username"
+                  name="username"
                   required
                   fullWidth
-                  id="name"
-                  placeholder="Jon Snow"
-                  error={nameError}
+                  id="username"
+                  placeholder="username"
+                  error={usernameError}
+                  helperText={usernameErrorMessage}
+                  onChange={handleChange}
+                  color={usernameError ? 'error' : 'primary'}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel htmlFor="fname">First name</FormLabel>
+                <TextField
+                  autoComplete="fname"
+                  name="fname"
+                  required
+                  fullWidth
+                  id="firstName"
+                  placeholder="Jon"
+                  error={fnameError}
                   helperText={nameErrorMessage}
-                  color={nameError ? 'error' : 'primary'}
+                  onChange={handleChange}
+                  color={fnameError ? 'error' : 'primary'}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel htmlFor="lname">Last name</FormLabel>
+                <TextField
+                  autoComplete="lname"
+                  name="lname"
+                  required
+                  fullWidth
+                  id="lastName"
+                  placeholder="Snow"
+                  error={lnameError}
+                  helperText={nameErrorMessage}
+                  onChange={handleChange}
+                  color={lnameError ? 'error' : 'primary'}
                 />
               </FormControl>
               <FormControl>
@@ -226,6 +310,7 @@ export default function SignUp() {
                   variant="outlined"
                   error={emailError}
                   helperText={emailErrorMessage}
+                  onChange={handleChange}
                   color={passwordError ? 'error' : 'primary'}
                 />
               </FormControl>
@@ -242,6 +327,7 @@ export default function SignUp() {
                   variant="outlined"
                   error={passwordError}
                   helperText={passwordErrorMessage}
+                  onChange={handleChange}
                   color={passwordError ? 'error' : 'primary'}
                 />
               </FormControl>
@@ -298,5 +384,9 @@ export default function SignUp() {
         toggleCustomTheme={toggleCustomTheme}
       />
     </ThemeProvider>
+    )}
+    
+    </>
   );
+  
 }
