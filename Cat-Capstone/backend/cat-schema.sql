@@ -11,12 +11,13 @@ CREATE TABLE users (
 CREATE TABLE cats (
     id SERIAL PRIMARY KEY,
     name VARCHAR(25),
-    username VARCHAR(25) REFERENCES users(username) ON DELETE CASCADE,
+    username VARCHAR(25),
     picture_id INT,
     breed TEXT,
     age INT,
     outdoor BOOLEAN,
-    friendly BOOLEAN
+    friendly BOOLEAN,
+    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );
 
 CREATE TABLE pictures (

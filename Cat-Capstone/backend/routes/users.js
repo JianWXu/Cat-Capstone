@@ -50,14 +50,14 @@ router.post("/", async function (req, res, next) {
  * Authorization required: admin
  **/
 
-router.get("/", ensureAdmin, async function (req, res, next) {
-  try {
-    const users = await User.findAll();
-    return res.json({ users });
-  } catch (err) {
-    return next(err);
-  }
-});
+// router.get("/", async function (req, res, next) {
+//   try {
+//     const users = await User.findAll();
+//     return res.json({ users });
+//   } catch (err) {
+//     return next(err);
+//   }
+// });
 
 /** GET /[username] => { user }
  *
@@ -69,7 +69,7 @@ router.get("/", ensureAdmin, async function (req, res, next) {
 
 router.get(
   "/:username",
-  ensureCorrectUserOrAdmin,
+  // ensureCorrectUserOrAdmin,
   async function (req, res, next) {
     try {
       const user = await User.get(req.params.username);

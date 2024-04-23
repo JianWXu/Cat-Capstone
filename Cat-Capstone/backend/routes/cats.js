@@ -50,5 +50,4 @@ router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
   }
 });
 
-
 module.exports = router;

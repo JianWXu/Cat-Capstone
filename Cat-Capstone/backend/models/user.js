@@ -90,8 +90,7 @@ class User {
       `SELECT username,
                   first_name AS "firstName",
                   last_name AS "lastName",
-                  email,
-                  is_admin AS "isAdmin"
+                  email
            FROM users
            WHERE username = $1`,
       [username]
@@ -102,13 +101,16 @@ class User {
     if (!user) throw new NotFoundError(`No user: ${username}`);
 
     const catsOwned = await db.query(
-      `SELECT cat_id
-           FROM cats AS a
+      `SELECT id
+           FROM cats
            WHERE user = $1`,
       [username]
     );
 
-    user.cats = catsOwned.rows.map(c => c.cat_id);
+    if (catsOwned) {
+      user.cats = catsOwned.rows.map(c => c.cat_id);
+    }
+
     return user;
   }
 
@@ -136,7 +138,7 @@ class User {
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
 
-    delete user.password; 
+    delete user.password;
     return user;
   }
 
@@ -152,8 +154,6 @@ class User {
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
   }
-
-  
 }
 
 module.exports = User;
