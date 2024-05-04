@@ -20,140 +20,238 @@ class User {
    **/
 
   static async authenticate(username, password) {
-    // try to find the user first
-    const result = await db.query(
-      `SELECT username,
-                password,
-                first_name AS "firstName",
-                last_name AS "lastName",
-                email,
-                is_admin AS "isAdmin"
-         FROM users
-         WHERE username = $1`,
-      [username]
-    );
-    const user = result.rows[0];
-
-    if (user) {
-      // compare hashed password to a new hash from password
-      const isValid = await bcrypt.compare(password, user.password);
-      if (isValid === true) {
-        delete user.password;
-        return user;
-      }
+    // Try to sign in the user using Supabase
+    const { user, error } = await db.auth.signIn({
+      email: username,
+      password: password
+    });
+  
+    if (error) {
+      throw new UnauthorizedError("Invalid username/password");
     }
-
+  
+    if (user) {
+      // If sign in successful, return user details
+      const { email, user_metadata } = user;
+      const { first_name, last_name, is_admin } = user_metadata;
+  
+      return {
+        username: username,
+        first_name: first_name,
+        last_name: last_name,
+        email: email,
+        is_admin: is_admin
+      };
+    }
+  
     throw new UnauthorizedError("Invalid username/password");
   }
 
   static async register({
     username,
     password,
-    firstName,
-    lastName,
+    first_name,
+    last_name,
     email,
     isAdmin,
   }) {
-    const duplicateCheck = await db.query(
-      `SELECT username
-         FROM users
-         WHERE username = $1`,
-      [username]
-    );
-
-    if (duplicateCheck.rows[0]) {
-      throw new BadRequestError(`Duplicate username: ${username}`);
+    // Check if the username already exists
+    const { data: existingUser, error } = await db
+      .from('users')
+      .select('*')
+      .eq('username', username)
+      .single();
+  
+    if (error) {
+      throw new Error(`Error checking duplicate username: ${error.message}`);
     }
-
-    const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
-
-    const result = await db.query(
-      `INSERT INTO users
-         (username,
-          password,
+  
+    if (existingUser) {
+      throw new Error(`Duplicate username: ${username}`);
+    }
+  
+    // Register the user with Supabase
+    const { user, session, error: registrationError } = await db.auth.signUp({
+      email,
+      password,
+    });
+  
+    if (registrationError) {
+      throw new Error(`Error registering user: ${registrationError.message}`);
+    }
+  
+    // Store additional user information in Supabase metadata
+    const { user_metadata, error: metadataError } = await db
+      .from('users')
+      .upsert(
+        {
+          username
           first_name,
           last_name,
-          email,
-          is_admin)
-         VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING username, first_name AS "firstName", last_name AS "lastName", email, is_admin AS "isAdmin"`,
-      [username, hashedPassword, firstName, lastName, email, isAdmin]
-    );
-
-    const user = result.rows[0];
-
-    return user;
+          is_admin: isAdmin,
+        },
+        { onConflict: ['username'] }
+      );
+  
+    if (metadataError) {
+      throw new Error(`Error storing user metadata: ${metadataError.message}`);
+    }
+  
+    // Return user details
+    return {
+      username: username,
+      first_name: first_name,
+      last_name: last_name,
+      email: email,
+      isAdmin: isAdmin,
+    };
   }
+  
+
+  // static async get(username) {
+  //   const userRes = await db.query(
+  //     `SELECT username,
+  //                 first_name AS "firstName",
+  //                 last_name AS "lastName",
+  //                 email
+  //          FROM users
+  //          WHERE username = $1`,
+  //     [username]
+  //   );
+
+  //   const user = userRes.rows[0];
+
+  //   if (!user) throw new NotFoundError(`No user: ${username}`);
+
+  //   const catsOwned = await db.query(
+  //     `SELECT id
+  //          FROM cats
+  //          WHERE user = $1`,
+  //     [username]
+  //   );
+
+  //   if (catsOwned) {
+  //     user.cats = catsOwned.rows.map(c => c.cat_id);
+  //   }
+
+  //   return user;
+  // }
 
   static async get(username) {
-    const userRes = await db.query(
-      `SELECT username,
-                  first_name AS "firstName",
-                  last_name AS "lastName",
-                  email
-           FROM users
-           WHERE username = $1`,
-      [username]
-    );
+    // Fetch user data
+    const { data: users, error } = await db
+      .from("users")
+      .select("username, first_name, last_name, email")
+      .eq("username", username)
+      .single();
 
-    const user = userRes.rows[0];
+    if (error) {
+      throw new Error(`Error fetching user: ${error.message}`);
+    }
 
-    if (!user) throw new NotFoundError(`No user: ${username}`);
+    if (!users) {
+      throw new NotFoundError(`No user: ${username}`);
+    }
 
-    const catsOwned = await db.query(
-      `SELECT id
-           FROM cats
-           WHERE user = $1`,
-      [username]
-    );
+    const user = users;
+
+    // Fetch cats owned by the user
+    const { data: catsOwned, error: catsError } = await db
+      .from("cats")
+      .select("id")
+      .eq("username", username);
+
+    if (catsError) {
+      throw new Error(
+        `Error fetching cats owned by user: ${catsError.message}`
+      );
+    }
 
     if (catsOwned) {
-      user.cats = catsOwned.rows.map(c => c.cat_id);
+      user.cats = catsOwned.map(cat => cat.id);
     }
 
     return user;
   }
+
+  // static async update(username, data) {
+  //   if (data.password) {
+  //     data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
+  //   }
+
+  //   const { setCols, values } = sqlForPartialUpdate(data, {
+  //     username: "username",
+  //     firstName: "first_name",
+  //     lastName: "last_name",
+  //   });
+  //   const usernameVarIdx = "$" + (values.length + 1);
+
+  //   const querySql = `UPDATE users 
+  //                     SET ${setCols} 
+  //                     WHERE username = ${usernameVarIdx} 
+  //                     RETURNING username,
+  //                               first_name AS "firstName",
+  //                               last_name AS "lastName",
+  //                               email`;
+  //   const result = await db.query(querySql, [...values, username]);
+  //   const user = result.rows[0];
+
+  //   if (!user) throw new NotFoundError(`No user: ${username}`);
+
+  //   delete user.password;
+  //   return user;
+  // }
+
+
 
   static async update(username, data) {
     if (data.password) {
       data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
     }
-
-    const { setCols, values } = sqlForPartialUpdate(data, {
-      username: "username",
-      firstName: "first_name",
-      lastName: "last_name",
-    });
-    const usernameVarIdx = "$" + (values.length + 1);
-
-    const querySql = `UPDATE users 
-                      SET ${setCols} 
-                      WHERE username = ${usernameVarIdx} 
-                      RETURNING username,
-                                first_name AS "firstName",
-                                last_name AS "lastName",
-                                email`;
-    const result = await db.query(querySql, [...values, username]);
-    const user = result.rows[0];
-
-    if (!user) throw new NotFoundError(`No user: ${username}`);
-
+  
+    const { username: _, ...updateData } = data; // Exclude username from update data
+  
+    // Update the user in Supabase
+    const { error: updateError } = await db
+      .from('users')
+      .update(updateData)
+      .match({ username });
+  
+    if (updateError) {
+      throw new Error(`Error updating user: ${updateError.message}`);
+    }
+  
+    // Fetch the updated user
+    const { data: user, error: fetchError } = await db
+      .from('users')
+      .select('*')
+      .eq('username', username)
+      .single();
+  
+    if (fetchError) {
+      throw new Error(`Error fetching updated user: ${fetchError.message}`);
+    }
+  
+    if (!user) {
+      throw new NotFoundError(`No user: ${username}`);
+    }
+  
+    // Omit the password field before returning the user
     delete user.password;
     return user;
   }
 
   static async remove(username) {
-    let result = await db.query(
-      `DELETE
-           FROM users
-           WHERE username = $1
-           RETURNING username`,
-      [username]
-    );
-    const user = result.rows[0];
+    const { error } = await db
+        .from('users')
+        .delete()
+        .match({ username: username });
 
-    if (!user) throw new NotFoundError(`No user: ${username}`);
-  }
+    if (error) {
+        throw new Error(`Error deleting user: ${error.message}`);
+    }
+}
+
 }
 
 module.exports = User;

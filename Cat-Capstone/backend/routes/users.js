@@ -5,10 +5,14 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
+const db = require("../db");
 const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../middleware/auth");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
 const Cat = require("../models/cat");
+const Picture = require("../models/picture");
 const { createToken } = require("../helpers/tokens");
 const userNewSchema = require("../schemas/userNewSchema.json");
 const userUpdateSchema = require("../schemas/userUpdateSchema.json");
@@ -160,16 +164,46 @@ router.delete(
 
 router.post(
   "/:username/cats/:id",
+  upload.single("image"),
   ensureCorrectUserOrAdmin,
   async function (req, res, next) {
+    const catImage = req.image;
+    console.log("uploaded cat image", catImage);
+    const catImageFile = catImage.file;
+
     try {
       const catId = +req.params.id;
-      await Cat.create(req.params.username, catId);
+
+      const picture_id = await Picture.addPicture(catId, {
+        ...req.data,
+        imageUrl: uploadedImageUrl,
+      });
+      await Cat.create(req.params.username, catId, picture_id);
       return res.json({ added: catId });
     } catch (err) {
       return next(err);
     }
   }
 );
+
+// const uploadToSupabase = async (username, file) => {
+//   const bucketName = 'cat_images'
+//   const filePath = `${username}/${file.name}`
+
+//   const { error } = await db
+//     .storage
+//     .from(bucketName)
+//     .upload(filePath, file, {
+//       cacheControl: '3600',
+//       upsert: true
+//     })
+
+//     // get the url to the image
+//     const { data } = db
+//       .storage
+//       .from(bucketName)
+//       .getPublicUrl(filePath)
+
+//     return data.public_url
 
 module.exports = router;

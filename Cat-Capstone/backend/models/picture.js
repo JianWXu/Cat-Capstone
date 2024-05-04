@@ -2,65 +2,55 @@
 
 const db = require("../db");
 const { NotFoundError } = require("../expressError");
-const multer = require("multer");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, next) {
-    // Define the destination directory where uploaded files will be stored
-    next(null, "uploads/");
-  },
-  filename: function (req, file, next) {
-    // Define the filename for the uploaded file
-    next(null, file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
 
 class Picture {
   static async addPicture(catId, data) {
-    const { title, description } = data;
-    const file = req.file;
+    const bucketName = "cat_images";
+    const { title, description, imageFile } = data;
+    const filePath = `${catId}/${imageFile.name}`;
 
-    const file_name = file.originalname;
-    const file_path = file.path; // Path where the file is stored
+    // Upload image to Supabase Storage
+    const { data: file, error } = await db.storage
+      .from(bucketName)
+      .upload(filePath, imageFile, {
+        cacheControl: "3600",
+        upsert: true,
+      });
 
-    const upload_date = new Date(); // Current date and time
-
-    if (!file) {
-      throw new NotFoundError("No file uploaded");
+    if (error) {
+      throw new Error(`Error uploading picture: ${error.message}`);
     }
 
-    const query = `
-        INSERT INTO pictures (
-            cat_id, 
-            title, 
-            description, 
-            file_name, 
-            file_path, 
-            upload_date)
-        VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING picture_id`;
+    const { data } = db.storage.from(bucketName).getPublicUrl(filePath);
 
-    const result = await db.query(query, [
-      catId,
-      title,
-      description,
-      file_name,
-      file_path,
-      upload_date,
-    ]);
-    const pictureId = result.rows[0].picture_id;
-    return pictureId;
+    // Get URL of uploaded image
+    const imageUrl = data.public_url;
+
+    // Insert picture metadata into the database
+    const { data: picture, error: insertError } = await db
+      .from("pictures")
+      .insert([
+        {
+          cat_id: catId,
+          title,
+          description,
+          image_url: imageUrl,
+        },
+      ]);
+
+    if (insertError) {
+      throw new Error(`Error adding picture: ${insertError.message}`);
+    }
+
+    return picture[0].pictureId;
   }
 
   static async remove(pictureId) {
-    const res = await db.query(`DELETE FROM pictures WHERE picture_Id = $1`, [
-      pictureId,
-    ]);
+    const { error } = await db.from("pictures").delete().eq("id", pictureId);
 
-    if (!res) throw new NotFoundError("Picture not found");
-    return;
+    if (error) {
+      throw new Error(`Error deleting picture: ${error.message}`);
+    }
   }
 }
 
