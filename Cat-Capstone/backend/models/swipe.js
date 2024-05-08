@@ -7,18 +7,17 @@ const { NotFoundError } = require("../expressError");
 
 class Swipe {
   static async addSwipe(username, catId, liked = false) {
-    //Insert user and cat swiped into swipes table
-    const swipeRes = await db.query(
-      `INSERT INTO swipes (
-                username,
-                catId,
-                liked
-            ) VALUES ($1,$2,$3)
-            RETURNING username, catId, liked`,
-      [username, catId, liked]
-    );
+    // Insert user and cat swiped into swipes table using Supabase client
+    const { data, error } = await db
+      .from("swipes")
+      .insert([{ username, catId, liked }]);
 
-    return swipeRes.rows[0];
+    if (error) {
+      throw new Error(`Error adding swipe: ${error.message}`);
+    }
+
+    // Return the inserted data
+    return data[0];
   }
 }
 

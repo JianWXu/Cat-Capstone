@@ -13,75 +13,44 @@ class Cat {
   //  * - catId: cat id
   //  **/
 
-  // static async addCat(username, catId) {
-  //   const preCheck = await db.query(
-  //     `SELECT id
-  //       FROM cats
-  //       WHERE id=$1`,
-  //     [catId]
-  //   );
-  //   const cat = preCheck.rows[0];
-
-  //   if (!cat) throw new NotFoundError(`No cat: ${catId}`);
-
-  //   const preCheck2 = await db.query(
-  //     `SELECT username
-  //            FROM users
-  //            WHERE username = $1`,
-  //     [username]
-  //   );
-  //   const user = preCheck2.rows[0];
-
-  //   if (!user) throw new NotFoundError(`No username: ${username}`);
-
-  //   await db.query(
-  //     `INSERT INTO cat_owner (cat_id, username)
-  //        VALUES ($1, $2)`,
-  //     [catId, username]
-  //   );
-  // }
-
   static async create(username, data) {
     // Insert picture into pictures table
     const { data: picResult, error: picError } = await db
-        .from('pictures')
-        .insert([
-            {
-                title: data.title,
-                description: data.description,
-                file_name: data.file_name,
-                file_path: data.file_path
-            }
-        ]);
+      .from("pictures")
+      .insert([
+        {
+          title: data.title,
+          description: data.description,
+          file_name: data.file_name,
+          file_path: data.file_path,
+        },
+      ]);
 
     if (picError) {
-        throw new Error(`Error inserting picture: ${picError.message}`);
+      throw new Error(`Error inserting picture: ${picError.message}`);
     }
 
     const picture_id = picResult[0].picture_id;
 
     // Insert cat with the associated picture_id
-    const { data: catResult, error: catError } = await db
-        .from('cats')
-        .insert([
-            {
-                name: data.name,
-                username: username,
-                breed: data.breed,
-                age: data.age,
-                outdoor: data.outdoor,
-                friendly: data.friendly,
-                picture_id: picture_id
-            }
-        ]);
+    const { data: catResult, error: catError } = await db.from("cats").insert([
+      {
+        name: data.name,
+        username: username,
+        breed: data.breed,
+        age: data.age,
+        outdoor: data.outdoor,
+        friendly: data.friendly,
+        picture_id: picture_id,
+      },
+    ]);
 
     if (catError) {
-        throw new Error(`Error inserting cat: ${catError.message}`);
+      throw new Error(`Error inserting cat: ${catError.message}`);
     }
 
     return catResult[0];
-}
-
+  }
 
   static async findAll({ breed, age, friendly } = {}) {
     let query = `SELECT c.id,

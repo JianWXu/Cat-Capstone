@@ -21,7 +21,7 @@ class Picture {
       throw new Error(`Error uploading picture: ${error.message}`);
     }
 
-    const { data } = db.storage.from(bucketName).getPublicUrl(filePath);
+    // const { data } = db.storage.from(bucketName).getPublicUrl(filePath);
 
     // Get URL of uploaded image
     const imageUrl = data.public_url;

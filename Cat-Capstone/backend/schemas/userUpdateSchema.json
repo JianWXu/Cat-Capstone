@@ -3,7 +3,13 @@
   "title": "Generated schema for Root",
   "type": "object",
   "properties": {
-    "username": {
+    "email": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 60,
+      "format": "email"
+    },
+    "password": {
       "type": "string",
       "minLength": 5,
       "maxLength": 20

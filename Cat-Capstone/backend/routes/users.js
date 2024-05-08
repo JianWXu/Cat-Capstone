@@ -21,48 +21,6 @@ const catUpdateSchema = require("../schemas/catUpdateSchema.json");
 
 const router = express.Router();
 
-/** POST / { user }  => { user, token }
- *
- * Adds a new user. The new user being added can be an
- * admin.
- *
- * This returns the newly created user and an authentication token for them:
- *  {user: { username, firstName, lastName, email, isAdmin }, token }
- *
- **/
-
-router.post("/", async function (req, res, next) {
-  try {
-    const validator = jsonschema.validate(req.body, userNewSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
-    }
-
-    const user = await User.register(req.body);
-    const token = createToken(user);
-    return res.status(201).json({ user, token });
-  } catch (err) {
-    return next(err);
-  }
-});
-
-/** GET / => { users: [ {username, firstName, lastName, email }, ... ] }
- *
- * Returns list of all users.
- *
- * Authorization required: admin
- **/
-
-// router.get("/", async function (req, res, next) {
-//   try {
-//     const users = await User.findAll();
-//     return res.json({ users });
-//   } catch (err) {
-//     return next(err);
-//   }
-// });
-
 /** GET /[username] => { user }
  *
  * Returns { username, firstName, lastName, isAdmin}
@@ -96,7 +54,7 @@ router.get(
 
 router.patch(
   "/:username",
-  ensureCorrectUserOrAdmin,
+  // ensureCorrectUserOrAdmin,
   async function (req, res, next) {
     try {
       const validator = jsonschema.validate(req.body, userUpdateSchema);
@@ -144,7 +102,7 @@ router.patch(
 
 router.delete(
   "/:username",
-  ensureCorrectUserOrAdmin,
+  // ensureCorrectUserOrAdmin,
   async function (req, res, next) {
     try {
       await User.remove(req.params.username);
