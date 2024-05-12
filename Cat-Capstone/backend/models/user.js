@@ -79,14 +79,6 @@ class User {
         .eq("username", username)
         .limit(1);
 
-      console.log("username", username);
-      console.log("password", password);
-      console.log("first name", first_name);
-      console.log("last name", last_name);
-      console.log("email", email);
-      console.log("existing user", existingUser);
-      console.log(usernameCheckError);
-
       if (usernameCheckError) {
         throw new Error(
           `Error checking duplicate username: ${usernameCheckError.message}`

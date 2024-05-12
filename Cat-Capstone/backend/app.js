@@ -35,6 +35,10 @@ app.use("/user", userRoutes);
 //   next();
 // });
 
+app.use(express.urlencoded({ extended: true }));
+
+app.use(express.json());
+
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {
   return next(new NotFoundError());

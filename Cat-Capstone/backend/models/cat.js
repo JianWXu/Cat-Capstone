@@ -13,43 +13,46 @@ class Cat {
   //  * - catId: cat id
   //  **/
 
-  static async create(username, data) {
-    // Insert picture into pictures table
-    const { data: picResult, error: picError } = await db
-      .from("pictures")
-      .insert([
-        {
-          title: data.title,
-          description: data.description,
-          file_name: data.file_name,
-          file_path: data.file_path,
-        },
-      ]);
+  static async create(username, catData) {
+    try {
+      // Insert cat with the associated picture_id
+      console.log("cat data", catData);
 
-    if (picError) {
-      throw new Error(`Error inserting picture: ${picError.message}`);
+      const { data: catResult, error: catError } = await db
+        .from("cats")
+        .insert({
+          name: catData.name,
+          username: username,
+          breed: catData.breed,
+          age: catData.age,
+          outdoor: catData.outdoor,
+          friendly: catData.friendly,
+        });
+
+      if (catError) {
+        throw new Error(`Error inserting cat: ${catError.message}`);
+      }
+
+      console.log("cat error", catError);
+
+      console.log("cat result from create", catResult);
+
+      // Check if catResult is null or empty
+      if (!catResult || catResult.length === 0) {
+        throw new Error("Failed to create cat. No result returned.");
+      }
+
+      // Extract the cat ID from the inserted data
+      const catId = catResult[0].id;
+
+      if (!catId) {
+        throw new Error("Failed to retrieve cat ID.");
+      }
+
+      return catId;
+    } catch (error) {
+      throw new Error(`Error creating cat: ${error.message}`);
     }
-
-    const picture_id = picResult[0].picture_id;
-
-    // Insert cat with the associated picture_id
-    const { data: catResult, error: catError } = await db.from("cats").insert([
-      {
-        name: data.name,
-        username: username,
-        breed: data.breed,
-        age: data.age,
-        outdoor: data.outdoor,
-        friendly: data.friendly,
-        picture_id: picture_id,
-      },
-    ]);
-
-    if (catError) {
-      throw new Error(`Error inserting cat: ${catError.message}`);
-    }
-
-    return catResult[0];
   }
 
   static async findAll({ breed, age, friendly } = {}) {

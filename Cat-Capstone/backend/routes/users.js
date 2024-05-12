@@ -3,12 +3,12 @@
 /** Routes for users. */
 
 const jsonschema = require("jsonschema");
-
 const express = require("express");
 const db = require("../db");
-const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../middleware/auth");
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const upload = multer();
+const bodyParser = require("body-parser");
+const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
 const Cat = require("../models/cat");
@@ -20,6 +20,10 @@ const catNewSchema = require("../schemas/catNewSchema.json");
 const catUpdateSchema = require("../schemas/catUpdateSchema.json");
 
 const router = express.Router();
+
+// Add body-parser middleware to parse JSON and URL-encoded bodies
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
 
 /** GET /[username] => { user }
  *
@@ -120,48 +124,63 @@ router.delete(
  * Authorization required: admin or same-user-as-:username
  * */
 
+router.post("/:username/cats/new", async function (req, res, next) {
+  // console.log(req)
+  // const catImage = req.file;
+  // console.log("uploaded cat image", catImage);
+  // const catData = req.body;
+
+  try {
+    // const { data, error } = await db.storage
+    //   .from("cat_images")
+    //   .upload(catImage.originalname, catImage.buffer);
+
+    // if (error) {
+    //   throw new Error(`Error uploading file: ${error.message}`);
+    // }
+
+    // const imageUrl = data.Location;
+    console.log(req.body);
+    const newCatId = await Cat.create(req.params.username, { ...req.body });
+    console.log(newCatId);
+    // const catId = newCat.id;
+
+    // Add the picture to the database
+    const picture_id = await Picture.addPicture(newCatId, {
+      ...req.data,
+      imageFile: imageUrl,
+    });
+
+    await db
+      .from("cats")
+      .update({
+        picture_id: picture_id,
+      })
+      .eq("id", catId);
+
+    return res.json({ added: catId });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 router.post(
-  "/:username/cats/:id",
+  "/:catId/uploadpic",
   upload.single("image"),
-  ensureCorrectUserOrAdmin,
   async function (req, res, next) {
-    const catImage = req.image;
-    console.log("uploaded cat image", catImage);
-    const catImageFile = catImage.file;
-
     try {
-      const catId = +req.params.id;
-
-      const picture_id = await Picture.addPicture(catId, {
-        ...req.data,
-        imageUrl: uploadedImageUrl,
+      const catImage = req.file;
+      console.log("uploaded cat image", catImage);
+      const picId = await Picture.addPicture(req.params.catId, {
+        title: "",
+        description: "",
+        imageFile: catImage,
       });
-      await Cat.create(req.params.username, catId, picture_id);
-      return res.json({ added: catId });
+      return res.json({ added: picId });
     } catch (err) {
       return next(err);
     }
   }
 );
-
-// const uploadToSupabase = async (username, file) => {
-//   const bucketName = 'cat_images'
-//   const filePath = `${username}/${file.name}`
-
-//   const { error } = await db
-//     .storage
-//     .from(bucketName)
-//     .upload(filePath, file, {
-//       cacheControl: '3600',
-//       upsert: true
-//     })
-
-//     // get the url to the image
-//     const { data } = db
-//       .storage
-//       .from(bucketName)
-//       .getPublicUrl(filePath)
-
-//     return data.public_url
 
 module.exports = router;

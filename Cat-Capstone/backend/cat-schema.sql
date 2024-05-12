@@ -25,8 +25,6 @@ CREATE TABLE pictures (
     cat_id INT,
     title VARCHAR(255),
     description TEXT,
-    -- file_name VARCHAR(255), -- Name of the uploaded file
-    -- file_path VARCHAR(255), -- Path to the uploaded file
     image_url VARCHAR(255),
     upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
