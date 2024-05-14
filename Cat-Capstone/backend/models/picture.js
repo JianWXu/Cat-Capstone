@@ -6,36 +6,36 @@ const { NotFoundError } = require("../expressError");
 class Picture {
   static async addPicture(catId, imageData) {
     const bucketName = "cat_images";
-    const { title = "", description = "", imageFile } = imageData;
+    // console.log(imageData);
+    const { title = "", description = "", catImage } = imageData;
     // console.log("image data", imageData);
-    const filePath = `/${bucketName}/${catId}/${imageFile.originalname}`;
+    const filePath = `${catId}/${catImage.originalname}`;
 
     console.log("file path", filePath);
-    console.log("image file", imageFile);
+    console.log("image file", catImage);
 
     // Upload image to Supabase Storage
     const { data: file, error } = await db.storage
       .from(bucketName)
-      .upload(filePath, imageFile.buffer, {
-        cacheControl: "3600",
-        upsert: true,
+      .upload(filePath, catImage.buffer, {
+        // cacheControl: "3600",
+        // upsert: true,
         contentType: "image/jpeg",
       });
 
     console.log("file", file);
+    console.log("error", error);
 
     if (error) {
       throw new Error(`Error uploading picture: ${error.message}`);
     }
 
-    console.log("error", error);
-
     const { data } = db.storage.from(bucketName).getPublicUrl(filePath);
 
-    console.log(data)
+    console.log(data);
 
     // Get URL of uploaded image
-    const imageUrl = data.public_url;
+    const imageUrl = data.publicUrl;
 
     // Insert picture metadata into the database
     const { data: picture, error: insertError } = await db

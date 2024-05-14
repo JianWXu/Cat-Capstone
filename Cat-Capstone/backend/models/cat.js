@@ -15,7 +15,6 @@ class Cat {
 
   static async create(username, catData) {
     try {
-      // Insert cat with the associated picture_id
       console.log("cat data", catData);
 
       const { data: catResult, error: catError } = await db
@@ -27,13 +26,14 @@ class Cat {
           age: catData.age,
           outdoor: catData.outdoor,
           friendly: catData.friendly,
-        });
+        })
+        .select();
+
+      console.log("cat error", catError);
 
       if (catError) {
         throw new Error(`Error inserting cat: ${catError.message}`);
       }
-
-      console.log("cat error", catError);
 
       console.log("cat result from create", catResult);
 

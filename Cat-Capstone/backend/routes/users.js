@@ -124,63 +124,52 @@ router.delete(
  * Authorization required: admin or same-user-as-:username
  * */
 
-router.post("/:username/cats/new", async function (req, res, next) {
-  // console.log(req)
-  // const catImage = req.file;
-  // console.log("uploaded cat image", catImage);
-  // const catData = req.body;
-
-  try {
-    // const { data, error } = await db.storage
-    //   .from("cat_images")
-    //   .upload(catImage.originalname, catImage.buffer);
-
-    // if (error) {
-    //   throw new Error(`Error uploading file: ${error.message}`);
-    // }
-
-    // const imageUrl = data.Location;
-    console.log(req.body);
-    const newCatId = await Cat.create(req.params.username, { ...req.body });
-    console.log(newCatId);
-    // const catId = newCat.id;
-
-    // Add the picture to the database
-    const picture_id = await Picture.addPicture(newCatId, {
-      ...req.data,
-      imageFile: imageUrl,
-    });
-
-    await db
-      .from("cats")
-      .update({
-        picture_id: picture_id,
-      })
-      .eq("id", catId);
-
-    return res.json({ added: catId });
-  } catch (err) {
-    return next(err);
-  }
-});
-
 router.post(
-  "/:catId/uploadpic",
+  "/:username/cats/new",
   upload.single("image"),
   async function (req, res, next) {
     try {
       const catImage = req.file;
+      const title = req.body.title;
+      const description = req.body.description;
+
+      const name = req.body.name;
+      const breed = req.body.breed;
+      const age = +req.body.age;
+      const outdoor = req.body.outdoor;
+      const friendly = req.body.friendly;
       console.log("uploaded cat image", catImage);
-      const picId = await Picture.addPicture(req.params.catId, {
-        title: "",
-        description: "",
-        imageFile: catImage,
+
+      const newCatId = await Cat.create(req.params.username, {
+        name,
+        breed,
+        age,
+        outdoor,
+        friendly,
       });
-      return res.json({ added: picId });
+      console.log(newCatId);
+      // const catId = newCat.id;
+
+      // Add the picture to the database
+      const picture_id = await Picture.addPicture(newCatId, {
+        title,
+        description,
+        catImage,
+      });
+
+      await db
+        .from("cats")
+        .update({
+          picture_id: picture_id,
+        })
+        .eq("id", newCatId);
+
+      return res.json({ added: newCatId });
     } catch (err) {
       return next(err);
     }
   }
 );
+
 
 module.exports = router;
