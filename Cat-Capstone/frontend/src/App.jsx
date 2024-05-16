@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react'
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useLocation } from "react-router-dom"
 import axios from 'axios'
+import AppNavBar from './components/routes/NavBar'
 import CatApi from '../../api'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import SignIn from "./components/sign-in-side/SignInSide.jsx"
-import SignUp from "./components/sign-up/SignUp.jsx"
-import AppRoutes from "./components/routes/Routes.jsx"
+import AppLandingPage from './components/routes/landingPageComponents/LandingPage';
+import AppRoutes from "./components/routes/Routes"
+import AppSignUp  from './components/routes/SignUp';
+import AppLogin from './components/routes/SignIn';
 import './App.css'
 
 function App() {
@@ -70,20 +70,20 @@ function App() {
     }    
   }
 
-  const shouldShowSignUp = () => {
-    return location.pathname === "/signup"
-  }
-
-  const shouldShowLogin = () => {
-    return location.pathname === "/login"
-  }
+  const shouldShowSignUp = location.pathname === '/signup';
+  const shouldShowLogin = location.pathname === '/login';
+  const shouldShowLanding = location.pathname === '/home';
 
 
   return (
     <>
       
-      {shouldShowLogin() && (<SignIn authLoginInfo={authLoginInfo} shouldShowLogin={shouldShowLogin} />)}
-      {shouldShowSignUp() && (<SignUp signUp={signUp} shouldShowSignUp={shouldShowSignUp} />)}
+      
+       <AppNavBar />
+      <AppRoutes />
+      {shouldShowLanding && <AppLandingPage shouldShowLanding={shouldShowLanding} />}
+      {shouldShowLogin && <AppLogin authLoginInfo={authLoginInfo} shouldShowLogin={shouldShowLogin} />}
+      {shouldShowSignUp && <AppSignUp signUp={signUp} shouldShowSignUp={shouldShowSignUp} />}
     </>
   )
 }

@@ -1,0 +1,28 @@
+.first-container {
+  display: flex;
+  text-align: left;
+  padding: 100px 20px 30px 90px;
+}
+
+.first-container-heading {
+  flex: 1;
+  margin: auto;
+  font-weight: lighter;
+  color: #4c5059;
+}
+
+.first-container-image img {
+  opacity: 0.8;
+  border-radius: 10px;
+  /* margin: 10px; */
+}
+
+.first-container-image {
+  flex: 1;
+  padding: 20px;
+}
+
+.second-container {
+  display: flex;
+  margin: 100px 20px 20px 20px;
+}

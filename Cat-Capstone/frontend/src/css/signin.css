@@ -1,0 +1,32 @@
+.signInFormDiv {
+  border: 1px solid rgba(168, 161, 115, 255);
+  padding: 20px; /* Optional: Adds some padding inside the border */
+  border-radius: 5px; /* Optional: Adds rounded corners */
+  width: fit-content; /* Optional: Adjusts width to fit content */
+  margin: auto;
+  font-weight: lighter;
+  background-color: rgba(168, 161, 115, 0.2);
+}
+
+.emailLabel {
+  vertical-align: baseline;
+  font-size: small;
+}
+
+.signinSubmitButton {
+  /* margin: 15px auto 1px; */
+  font-weight: bolder;
+  padding: 5px;
+  border: 1px solid rgba(168, 161, 115, 255);
+  border-radius: 3px;
+  margin: 20px auto 5px auto;
+  background-color: rgba(168, 161, 115, 0.5);
+}
+
+/* Style the placeholder text */
+input::placeholder {
+  font-size: 12px; /* Adjust the font size as needed */
+  color: #888; /* Optional: Change the color of the placeholder text */
+  padding-left: 3px;
+  padding-top: 0px;
+}

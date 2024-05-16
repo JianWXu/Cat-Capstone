@@ -1,0 +1,11 @@
+.landing-page-card-div {
+  font-size: x-small;
+  font-weight: lighter;
+  border: 1px solid rgba(168, 161, 115, 255);
+  border-radius: 7px;
+  margin: 10px 30px;
+}
+
+.landing-page-card-title {
+  font-size: small;
+}

@@ -1,17 +1,18 @@
-import {Route, Routes, Navigate} from "react-router-dom"
-import SignIn from "../sign-in-side/SignInSide";
-import SignUp from "../sign-up/SignUp"
+import React from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import AppLandingPage from './landingPageComponents/LandingPage';
+import AppSignUp from './SignUp';
+import AppLogin from './SignIn';
 
 function AppRoutes() {
-    return (
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp/>} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    );
-  }
-
+  return (
+    <Routes>
+      <Route path="/home" element={<AppLandingPage />} />
+      <Route path="/login" element={<AppLogin />} />
+      <Route path="/signup" element={<AppSignUp />} />
+      <Route path="*" element={<Navigate to="/home" />} />
+    </Routes>
+  );
+}
 
 export default AppRoutes;
