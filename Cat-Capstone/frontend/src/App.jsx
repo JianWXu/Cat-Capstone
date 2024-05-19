@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useLocation } from "react-router-dom"
+import UserContext from './userContext'
 import axios from 'axios'
 import AppNavBar from './components/routes/NavBar'
 import CatApi from '../../api'
@@ -69,6 +70,14 @@ function App() {
       console.error("Error signing up:", err)
     }    
   }
+
+  const signOut = () => {
+    setUserToken(INITIAL_STATE)
+    setUsername(INITIAL_STATE)
+    setUser(INITIAL_STATE)
+    console.log("signed out", username)
+  }
+
 
   const shouldShowSignUp = location.pathname === '/signup';
   const shouldShowLogin = location.pathname === '/login';

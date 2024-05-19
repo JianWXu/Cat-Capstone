@@ -7,8 +7,8 @@ function AppSignUp({ signUp, shouldShowSignUp }) {
   const INITIAL_STATE = {
     username: '',
     password: '',
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: ''
   };
 
@@ -62,32 +62,32 @@ function AppSignUp({ signUp, shouldShowSignUp }) {
               <br/>
               <input
                 id="password"
-                type="text"
+                type="password"
                 name="password"
                 placeholder="password"
                 value={formData.password}
                 onChange={handleChange}
               />
               <br/>
-              <label htmlFor="firstName" className="firstNameLabel">First Name: </label>
+              <label htmlFor="first_name" className="firstNameLabel">First Name: </label>
               <br/>
               <input
-                id="firstName"
+                id="first_name"
                 type="text"
-                name="firstName"
+                name="first_name"
                 placeholder="first name"
-                value={formData.firstName}
+                value={formData.first_name}
                 onChange={handleChange}
               />
               <br/>
-              <label htmlFor="lastName" className="lastNameLabel">Last Name: </label>
+              <label htmlFor="last_name" className="lastNameLabel">Last Name: </label>
               <br/>
               <input
-                id="lastName"
+                id="last_name"
                 type="text"
-                name="lastName"
+                name="last_name"
                 placeholder="last name"
-                value={formData.lastName}
+                value={formData.last_name}
                 onChange={handleChange}
               />
               <br/>

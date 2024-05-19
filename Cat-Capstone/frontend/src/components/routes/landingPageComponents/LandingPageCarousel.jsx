@@ -35,7 +35,7 @@ function LandingPageCarousel({ cards }) {
     let newIndex = index + direction;
 
     // Check if the new index exceeds the bounds
-    if (newIndex < 0 || newIndex >= cards.length) {
+    if (newIndex < 0 || newIndex >= cards.length ) {
         // Loop back to the beginning or end
         newIndex = newIndex < 0 ? cards.length - 1 : 0;
     }
@@ -43,6 +43,12 @@ function LandingPageCarousel({ cards }) {
     setIndex(newIndex);
     console.log("Selected Index:", selectedIndex);
 };
+
+  const goBackToBeg = () => {
+  if (index <0 || index >=cards.length){
+    index === 0
+  }
+}
 
 
   return (
@@ -59,6 +65,9 @@ function LandingPageCarousel({ cards }) {
         interval={null} 
         indicators={false} 
         controls={false}
+        // pause="hover"
+        wrap={true}
+        onSlid={(index)=> goBackToBeg(index)}
       >
         {cards.map((cardGroup, i) => (
           <Carousel.Item key={i}>

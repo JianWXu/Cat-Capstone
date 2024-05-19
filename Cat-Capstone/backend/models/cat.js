@@ -56,45 +56,47 @@ class Cat {
   }
 
   static async findAll({ breed, age, friendly } = {}) {
-    let query = `SELECT c.id,
-                        c.name,
-                        c.username,
-                        c.picture_id AS cat_picture_id,
-                        c.breed,
-                        c.age,
-                        c.outdoor,
-                        c.friendly,
-                        p.picture_id AS picture_picture_id,
-                        p.title,
-                        p.description,
-                        p.file_name,
-                        p.file_path,
-                        p.upload_date                        
-                FROM cats c
-                LEFT JOIN pictures p ON c.picture_id = p.picture_id`;
-    let whereExpressions = [];
-    let queryValues = [];
+    let query = db.from("cats").select(`
+        id,
+        name,
+        username,
+        breed,
+        age,
+        outdoor,
+        friendly,
+        pictures:picture_id (
+          picture_id,
+          cat_id,
+          title,
+          description,
+          image_url,
+          upload_date
+        )
+      `);
 
-    if (breed !== undefined) {
-      queryValues.push(`%${breed}%`);
-      whereExpressions.push(`breed ILIKE $${queryValues.length}`);
+    if (breed) {
+      query = query.ilike("breed", `%${breed}%`);
     }
 
-    if (age !== undefined) {
-      whereExpressions.push(`age=${age}`);
+    if (age) {
+      query = query.eq("age", age);
     }
+
     if (friendly !== undefined) {
-      whereExpressions.push(`friendly=${friendly}`);
+      query = query.eq("friendly", friendly);
     }
 
-    // Finalize query and return results
+    // Execute the query
+    const { data: cats, error } = await query;
 
-    query += " ORDER BY id";
-    const catRes = await db.query(query, queryValues);
+    if (error) {
+      console.error("Error fetching cats:", error);
+      throw new Error("Error fetching cats");
+    }
 
     // Grouping cats by their id and attaching pictures to each cat
     const catsWithPictures = {};
-    catRes.rows.forEach(cat => {
+    cats.forEach(cat => {
       if (!catsWithPictures[cat.id]) {
         catsWithPictures[cat.id] = {
           id: cat.id,
@@ -108,14 +110,15 @@ class Cat {
         };
       }
 
-      if (cat.picture_picture_id) {
-        catsWithPictures[cat.id].pictures.push({
-          picture_id: cat.picture_picture_id,
-          title: cat.title,
-          description: cat.description,
-          file_name: cat.file_name,
-          file_path: cat.file_path,
-          upload_date: cat.upload_date,
+      if (cat.pictures && cat.pictures.length > 0) {
+        cat.pictures.forEach(picture => {
+          catsWithPictures[cat.id].pictures.push({
+            picture_id: picture.picture_id,
+            title: picture.title,
+            description: picture.description,
+            image_url: picture.image_url,
+            upload_date: picture.upload_date,
+          });
         });
       }
     });
@@ -124,173 +127,193 @@ class Cat {
   }
 
   static async get(id) {
-    const catRes = await db.query(
-      `SELECT c.id,
-              c.name,
-              c.username,
-              c.picture_id AS cat_picture_id,
-              c.breed,
-              c.age,
-              c.outdoor,
-              c.friendly,
-              p.picture_id AS picture_picture_id,
-              p.title,
-              p.description,
-              p.file_name,
-              p.file_path,
-              p.upload_date
-      FROM cats c
-      LEFT JOIN pictures p ON c.picture_id = p.picture_id
-      WHERE c.id=$1`,
-      [id]
-    );
+    const { data: cat, error: catError } = await db
+      .from("cats")
+      .select(
+        `
+        id,
+        name,
+        username,
+        breed,
+        age,
+        outdoor,
+        friendly,
+        pictures (
+          picture_id,
+          title,
+          description,
+          image_url AS file_path,
+          upload_date
+        )
+      `
+      )
+      .eq("id", id)
+      .single();
 
-    if (catRes.rows.length === 0) {
-      throw new NotFoundError(`No cat found with id: ${id}`);
+    // Handle errors
+    if (catError) {
+      if (catError.code === "PGRST116") {
+        // Code for "row not found"
+        throw new Error(`No cat found with id: ${id}`);
+      }
+      console.error("Error fetching cat:", catError);
+      throw new Error("Error fetching cat");
     }
 
-    // Grouping pictures by their picture_id
-    const cat = {
-      id: catRes.rows[0].id,
-      name: catRes.rows[0].name,
-      username: catRes.rows[0].username,
-      breed: catRes.rows[0].breed,
-      age: catRes.rows[0].age,
-      outdoor: catRes.rows[0].outdoor,
-      friendly: catRes.rows[0].friendly,
-      pictures: [],
+    // Process and return the result
+    return {
+      id: cat.id,
+      name: cat.name,
+      username: cat.username,
+      breed: cat.breed,
+      age: cat.age,
+      outdoor: cat.outdoor,
+      friendly: cat.friendly,
+      pictures: cat.pictures || [],
     };
-
-    catRes.rows.forEach(row => {
-      if (row.picture_picture_id) {
-        cat.pictures.push({
-          picture_id: row.picture_picture_id,
-          title: row.title,
-          description: row.description,
-          file_name: row.file_name,
-          file_path: row.file_path,
-          upload_date: row.upload_date,
-        });
-      }
-    });
-
-    return cat;
   }
 
   static async getRandomCat(userId) {
-    //get total number of rows in cat table
-    const catRows = await db.query(`SELECT COUNT *  AS totalCats FROM cats`);
-    const totalCats = catRows[0].totalCats;
+    // Get the total number of rows in the cats table
+    const { data: catData, error: catError } = await db
+      .from("cats")
+      .select("id", { count: "exact", head: true });
 
-    //loop til I find a unique catId that's not in Swiped table connected to the user
+    if (catError) {
+      console.error(catError);
+      throw new Error("Error fetching total number of cats");
+    }
+
+    const totalCats = catData.count;
+
+    // Loop until a unique catId is found that's not in the swipes table for the user
     while (true) {
       const randomCatId = Math.floor(Math.random() * totalCats) + 1;
 
-      const swipeRows = await db.query(
-        `
-        SELECT * FROM swipes WHERE userId=$1 AND catId=$2`,
-        [userId, randomCatId]
-      );
+      const { data: swipeData, error: swipeError } = await db
+        .from("swipes")
+        .select("*")
+        .eq("userId", userId)
+        .eq("catId", randomCatId);
 
-      //if the catId doesn't exist in the swipes table for the current user, return it
-      if (swipesRows.length === 0) {
+      if (swipeError) {
+        console.error(swipeError);
+        throw new Error("Error fetching swipes");
+      }
+
+      // If the catId doesn't exist in the swipes table for the current user, return it
+      if (swipeData.length === 0) {
         return randomCatId;
       }
     }
   }
 
   static async update(id, data) {
-    // Separate the picture data from the other data
     const { picture, ...catData } = data;
 
-    // Build the SET clause for updating cat data
-    const { setCols, values } = sqlForPartialUpdate(catData, {});
-
-    // If there's picture data, handle it separately
     let pictureId = null;
     if (picture) {
       // Check if the picture exists
-      const existingPictureRes = await db.query(
-        `SELECT picture_id FROM pictures WHERE picture_id = $1`,
-        [picture.picture_id]
-      );
+      const { data: existingPicture, error: pictureCheckError } = await db
+        .from("pictures")
+        .select("picture_id")
+        .eq("picture_id", picture.picture_id)
+        .single();
 
-      if (existingPictureRes.rows.length === 0) {
+      if (pictureCheckError && pictureCheckError.code !== "PGRST116") {
+        // Handle error that is not related to "no rows returned"
+        console.error(pictureCheckError);
+        throw new Error("Error checking picture existence");
+      }
+
+      if (!existingPicture) {
         // If the picture doesn't exist, insert it into the pictures table
-        const insertPictureRes = await db.query(
-          `INSERT INTO pictures (title, description, file_name, file_path) 
-                 VALUES ($1, $2, $3, $4) 
-                 RETURNING picture_id`,
-          [
-            picture.title,
-            picture.description,
-            picture.file_name,
-            picture.file_path,
-          ]
-        );
-        pictureId = insertPictureRes.rows[0].picture_id;
+        const { data: newPicture, error: insertPictureError } = await db
+          .from("pictures")
+          .insert([
+            {
+              title: picture.title,
+              description: picture.description,
+              file_name: picture.file_name,
+              file_path: picture.file_path,
+            },
+          ])
+          .select("picture_id")
+          .single();
+
+        if (insertPictureError) {
+          console.error(insertPictureError);
+          throw new Error("Error inserting new picture");
+        }
+
+        pictureId = newPicture.picture_id;
       } else {
         // If the picture already exists, use its picture_id
-        pictureId = picture.picture_id;
+        pictureId = existingPicture.picture_id;
       }
     }
 
-    // Include picture_id in the update query
-    setCols.push("picture_id=$" + (values.length + 1));
-    values.push(pictureId);
+    // Update cat data including picture_id if available
+    const updateData = {
+      ...catData,
+      picture_id: pictureId,
+    };
 
-    // Build the update query
-    const idVarIdx = "$" + (values.length + 1);
-    const querySql = `UPDATE cats
-                      SET ${setCols}
-                      WHERE id=${idVarIdx}
-                      RETURNING id, name, username, picture_id, breed, age, outdoor, friendly`;
+    const { data: updatedCat, error: updateCatError } = await db
+      .from("cats")
+      .update(updateData)
+      .eq("id", id)
+      .select("id, name, username, picture_id, breed, age, outdoor, friendly")
+      .single();
 
-    // Execute the update query
-    const result = await db.query(querySql, [...values, id]);
-    const cat = result.rows[0];
-
-    // Throw an error if the cat doesn't exist
-    if (!cat) {
-      throw new NotFoundError(`No cat: ${id}`);
+    if (updateCatError) {
+      console.error(updateCatError);
+      throw new Error("Error updating cat data");
     }
 
     // Return the updated cat
-    return cat;
+    return updatedCat;
   }
 
   //Deletes cat with matching id from database
   // Retrieve and remove the picture IDs associated with the cat
 
   static async remove(id) {
-    const picturesResult = await db.query(
-      `SELECT picture_id
-       FROM cats
-       WHERE id=$1`,
-      [id]
-    );
+    // Fetch the picture IDs associated with the cat
+    const { data: catPictures, error: catPicturesError } = await db
+      .from("cats")
+      .select("picture_id")
+      .eq("id", id);
 
-    const catPictures = picturesResult.rows;
+    if (catPicturesError) {
+      console.error(catPicturesError);
+      throw new Error("Error fetching cat pictures");
+    }
 
-    const result = await db.query(
-      `DELETE FROM cats
-       WHERE id=$1
-       RETURNING *`,
-      [id]
-    );
+    // Delete the cat
+    const { data: deletedCat, error: deleteCatError } = await db
+      .from("cats")
+      .delete()
+      .eq("id", id)
+      .select("*")
+      .single();
 
-    const cat = result.rows[0];
-
-    if (!cat) {
+    if (deleteCatError) {
+      console.error(deleteCatError);
       throw new NotFoundError(`No cat: ${id}`);
     }
 
+    // Delete associated pictures
     for (const pic of catPictures) {
-      await db.query(
-        `DELETE FROM pictures
-             WHERE picture_id = $1`,
-        [pic.picture_id]
-      );
+      const { error: deletePictureError } = await db
+        .from("pictures")
+        .delete()
+        .eq("picture_id", pic.picture_id);
+
+      if (deletePictureError) {
+        console.error(deletePictureError);
+        throw new Error(`Error deleting picture with ID: ${pic.picture_id}`);
+      }
     }
   }
 }
