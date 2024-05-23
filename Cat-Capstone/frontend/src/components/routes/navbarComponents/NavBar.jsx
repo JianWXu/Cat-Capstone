@@ -1,8 +1,8 @@
 import React from 'react';
 import { Nav, Container, Navbar } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import whiskurrLogo from '../../assets/Editted_Cat.png';
-import '../../css/navbar.css';
+import whiskurrLogo from '../../../assets/Editted_Cat.png';
+import './navbar.css';
 
 function AppNavBar() {
   return (

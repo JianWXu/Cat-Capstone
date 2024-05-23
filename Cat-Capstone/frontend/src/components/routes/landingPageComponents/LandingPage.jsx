@@ -10,9 +10,7 @@ function AppLandingPage({ shouldShowLanding }) {
     [
       { title: 'Jessica and Tinker', text: 'I love this app so much and have been using it a lot. I met so many people and so many great cats!' }, 
       { title: 'David and Molly', text: 'I found my human bff and my cat has a new friend to wrestle with.' }, 
-      { title: 'Jenny and Luna', text: 'We just moved to a new city and it\'s hard to meet people. I am so happy with the app!' }
-    ],
-    [
+      { title: 'Jenny and Luna', text: 'We just moved to a new city and it\'s hard to meet people. I am so happy with the app!' },    
       { title: 'Sam and Bob', text: 'Highly recommend!' }, 
       { title: 'Kevin and the Menance', text: 'We don\'t need the dog park! We have Whiskurr!' }, 
       { title: 'Audrey and Cat', text: 'This app gives me an excuse to walk my cat.' }

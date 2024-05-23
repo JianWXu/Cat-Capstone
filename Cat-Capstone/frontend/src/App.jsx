@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useLocation } from "react-router-dom"
-import UserContext from './userContext'
 import axios from 'axios'
-import AppNavBar from './components/routes/NavBar'
+import AppNavBar from './components/routes/navbarComponents/NavBar'
 import CatApi from '../../api'
 import AppLandingPage from './components/routes/landingPageComponents/LandingPage';
 import AppRoutes from "./components/routes/Routes"

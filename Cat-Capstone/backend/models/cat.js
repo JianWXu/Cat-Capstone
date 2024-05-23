@@ -3,6 +3,7 @@
 const db = require("../db");
 const { NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
+const Picture = require("../models/picture");
 
 /** Related functions for cats. */
 
@@ -208,7 +209,7 @@ class Cat {
     }
   }
 
-  static async update(id, data) {
+  static async updateCat(catId, data) {
     const { picture, ...catData } = data;
 
     let pictureId = null;
@@ -227,26 +228,12 @@ class Cat {
       }
 
       if (!existingPicture) {
-        // If the picture doesn't exist, insert it into the pictures table
-        const { data: newPicture, error: insertPictureError } = await db
-          .from("pictures")
-          .insert([
-            {
-              title: picture.title,
-              description: picture.description,
-              file_name: picture.file_name,
-              file_path: picture.file_path,
-            },
-          ])
-          .select("picture_id")
-          .single();
-
-        if (insertPictureError) {
+        try {
+          pictureId = await PictureModel.addPicture(catId, picture);
+        } catch (insertPictureError) {
           console.error(insertPictureError);
           throw new Error("Error inserting new picture");
         }
-
-        pictureId = newPicture.picture_id;
       } else {
         // If the picture already exists, use its picture_id
         pictureId = existingPicture.picture_id;
@@ -280,13 +267,13 @@ class Cat {
 
   static async remove(id) {
     // Fetch the picture IDs associated with the cat
-    const { data: catPictures, error: catPicturesError } = await db
+    const { data: catPicturesId, error: catPicturesIdError } = await db
       .from("cats")
       .select("picture_id")
       .eq("id", id);
 
-    if (catPicturesError) {
-      console.error(catPicturesError);
+    if (catPicturesIdError) {
+      console.error(catPicturesIdError);
       throw new Error("Error fetching cat pictures");
     }
 
@@ -304,7 +291,7 @@ class Cat {
     }
 
     // Delete associated pictures
-    for (const pic of catPictures) {
+    for (const pic of catPicturesId) {
       const { error: deletePictureError } = await db
         .from("pictures")
         .delete()

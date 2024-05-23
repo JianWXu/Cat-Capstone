@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
+// const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
 
-// let BASE_URL = "http://localhost:3001";
+let BASE_URL = "http://localhost:3001";
 
 class CatApi {
   static token = localStorage.getItem("userToken");
@@ -36,11 +36,7 @@ class CatApi {
   static async verifyUserSignIn(data) {
     let { email, password } = data;
     try {
-      let res = await this.request(
-        `/auth/token`,
-        { email, password },
-        "post"
-      );
+      let res = await this.request(`/auth/token`, { email, password }, "post");
       console.log(res.token);
       CatApi.token = res.token;
       localStorage.setItem("userToken", res.token);
@@ -66,23 +62,23 @@ class CatApi {
       throw err;
     }
   }
-}
 
-static async patchUser(username, data){
-  try {
-    let res = await this.request(`users/${username}`, data, "patch")
-    return res;
-  } catch(err){
-    console.error("Error updating user", err)
-    throw err;
+  static async patchUser(username, data) {
+    try {
+      let res = await this.request(`users/${username}`, data, "patch");
+      return res;
+    } catch (err) {
+      console.error("Error updating user", err);
+      throw err;
+    }
+  }
+
+  static async patchCat(info) {
+    try {
+      let { username, id, name, breed, age, outdoor, friendly, picture } = info;
+    } catch (err) {
+      throw err;
+    }
   }
 }
-
-static async patchCat(info){
-  try{
-    let {username, id, name, breed, age, outdoor, friendly, picture} = info;
-
-  }
-}
-
 export default CatApi;

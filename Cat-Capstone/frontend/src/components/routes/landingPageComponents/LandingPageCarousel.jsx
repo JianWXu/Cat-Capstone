@@ -1,88 +1,56 @@
-// LandingPageCarousel.jsx
-import React, { useState, useRef } from 'react';
-import Carousel from 'react-bootstrap/Carousel';
-import LandingPageCard from './LandingPageCard';
-import PropTypes from 'prop-types';
+import React from "react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import LandingPageCard from "./LandingPageCard";
 import "./landingpagecarousel.css"
 
 function LandingPageCarousel({ cards }) {
-  const [index, setIndex] = useState(0);
-  const [startX, setStartX] = useState(null);
-  const carouselRef = useRef(null);
-
-  const handleMouseDown = (e) => {
-    setStartX(e.pageX - carouselRef.current.offsetLeft);
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    adaptiveHeight: true,  // Ensure each slide adapts to the height of its content
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
   };
-
-  const handleMouseMove = (e) => {
-    if (!startX) return;
-    const x = e.pageX - carouselRef.current.offsetLeft;
-    const diff = startX - x;
-    if (Math.abs(diff) > 50) {
-      setIndex((prevIndex) => (diff > 0 ? prevIndex + 1 : prevIndex - 1));
-      setStartX(null);
-    }
-  };
-
-  const handleMouseUp = () => {
-    setStartX(null);
-  };
-  
-
-  const handleSelect = (selectedIndex) => {
-    // Calculate the next index based on the direction of the slide
-    const direction = selectedIndex > index ? 1 : -1;
-    let newIndex = index + direction;
-
-    // Check if the new index exceeds the bounds
-    if (newIndex < 0 || newIndex >= cards.length ) {
-        // Loop back to the beginning or end
-        newIndex = newIndex < 0 ? cards.length - 1 : 0;
-    }
-
-    setIndex(newIndex);
-    console.log("Selected Index:", selectedIndex);
-};
-
-  const goBackToBeg = () => {
-  if (index <0 || index >=cards.length){
-    index === 0
-  }
-}
-
 
   return (
-    <div
-      className="landing-page-carousel"
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      ref={carouselRef}
-    >
-      <Carousel 
-        activeIndex={index} 
-        onSelect={(selectedIndex) => handleSelect(selectedIndex)}
-        interval={null} 
-        indicators={false} 
-        controls={false}
-        // pause="hover"
-        wrap={true}
-        onSlid={(index)=> goBackToBeg(index)}
-      >
+    <div className="landing-page-carousel">
+      <Slider {...settings}>
         {cards.map((cardGroup, i) => (
-          <Carousel.Item key={i}>
-            <div className="d-flex justify-content-around">
-              {cardGroup.map((item, j) => (
-                <LandingPageCard key={j} title={item.title} text={item.text} />
-              ))}
-            </div>
-          </Carousel.Item>
+          <div key={i} className="d-flex justify-content-around">
+            {cardGroup.map((item, j) => (
+              <LandingPageCard key={j} title={item.title} text={item.text} />
+            ))}
+          </div>
         ))}
-      </Carousel>
+      </Slider>
     </div>
   );
 }
-
-
 
 export default LandingPageCarousel;

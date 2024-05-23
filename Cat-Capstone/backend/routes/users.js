@@ -91,7 +91,7 @@ router.patch(
         throw new BadRequestError(errs);
       }
 
-      const cat = await Cat.update(req.params.id, req.body);
+      const cat = await Cat.updateCat(req.params.id, req.body);
       return res.json({ cat });
     } catch (err) {
       return next(err);

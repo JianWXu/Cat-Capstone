@@ -18,8 +18,8 @@ class Picture {
     const { data: file, error } = await db.storage
       .from(bucketName)
       .upload(filePath, catImage.buffer, {
-        // cacheControl: "3600",
-        // upsert: true,
+        cacheControl: "3600",
+        upsert: true,
         contentType: "image/jpeg",
       });
 

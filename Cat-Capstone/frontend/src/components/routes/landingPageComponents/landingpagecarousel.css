@@ -1,3 +1,22 @@
-.landing-page-carousel {
-  margin: 10px auto;
+.landing-page-carousel .slick-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.landing-page-card-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Adjust based on your layout */
+}
+
+.landing-page-carousel .slick-list {
+  overflow: hidden;
+}
+
+.landing-page-carousel .slick-track {
+  display: flex;
 }

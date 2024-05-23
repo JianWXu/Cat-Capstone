@@ -2,7 +2,8 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card';
 import PropTypes from 'prop-types';
-import "./landingpagecard.css"
+// import "./landingpagecard.css"
+import "./landingpagecarousel.css"
 
 function LandingPageCard({ title, text }) {
   return (
