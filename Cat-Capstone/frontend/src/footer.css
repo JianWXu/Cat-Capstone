@@ -1,0 +1,8 @@
+.footer {
+  background-color: #f8f9fa; /* Background color for the footer */
+  text-align: center; /* Center-align the text */
+  padding: 20px 0; /* Padding top and bottom */
+  margin-top: 30px; /* Margin at the top to separate from the content */
+  font-size: 14px; /* Adjust font size */
+  color: #6c757d; /* Text color */
+}

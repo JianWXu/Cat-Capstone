@@ -8,6 +8,7 @@ import AppLandingPage from './components/routes/landingPageComponents/LandingPag
 import AppRoutes from "./components/routes/Routes"
 import AppSignUp  from './components/routes/SignUp';
 import AppLogin from './components/routes/SignIn';
+import Footer from './Footer'
 import './App.css'
 
 function App() {
@@ -92,6 +93,7 @@ function App() {
       {shouldShowLanding && <AppLandingPage shouldShowLanding={shouldShowLanding} />}
       {shouldShowLogin && <AppLogin authLoginInfo={authLoginInfo} shouldShowLogin={shouldShowLogin} />}
       {shouldShowSignUp && <AppSignUp signUp={signUp} shouldShowSignUp={shouldShowSignUp} />}
+      <Footer /> {/* Include Footer component */}
     </>
   )
 }

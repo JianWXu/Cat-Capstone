@@ -1,9 +1,16 @@
-.landing-page-carousel .slick-slide {
+/* landingpagecarousel.css */
+
+.landing-page-carousel {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 40px; /* Add some margin at the bottom to create space */
+}
+
+.carousel-card {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;
-  box-sizing: border-box;
+  height: 100%;
 }
 
 .landing-page-card-div {
@@ -11,6 +18,28 @@
   justify-content: center;
   align-items: center;
   width: 100%; /* Adjust based on your layout */
+  margin-bottom: 10px; /* Additional margin at the bottom */
+}
+
+.landing-page-card-div .card {
+  width: 18rem; /* Set the width of your cards */
+  border: 1px solid rgba(168, 161, 115, 255);
+  border-radius: 7px;
+  padding: 20px; /* Increased padding inside each card */
+  box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
+  font-size: x-small; /* Adjust font size */
+  font-weight: lighter; /* Adjust font weight */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.6
+  ); /* Background with slight transparency */
+}
+
+.landing-page-card-title {
+  font-size: smaller;
+  font-weight: lighter;
 }
 
 .landing-page-carousel .slick-list {
@@ -19,4 +48,12 @@
 
 .landing-page-carousel .slick-track {
   display: flex;
+}
+
+.landing-page-carousel .slick-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  box-sizing: border-box;
 }
