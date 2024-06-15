@@ -16,11 +16,22 @@ class CatApi {
     const params = method === "get" ? data : {};
 
     try {
-      return (await axios({ url, method, data, params, headers })).data;
+      const response = await axios({ url, method, data, params, headers });
+      return response.data;
     } catch (err) {
-      console.error("API Error:", err.response);
-      let message = err.response.data.error.message;
-      throw Array.isArray(message) ? message : [message];
+      console.error("API Error:", err);
+      if (
+        err.response &&
+        err.response.data &&
+        err.response.data.error &&
+        err.response.data.error.message
+      ) {
+        throw err.response.data.error.message;
+      } else if (err.message) {
+        throw err.message;
+      } else {
+        throw err;
+      }
     }
   }
 

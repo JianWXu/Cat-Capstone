@@ -1,6 +1,6 @@
 "user strict";
 
-const db = request("../db");
+const db = require("../db");
 const { NotFoundError } = require("../expressError");
 
 /** Relate functions for user's swipes */
