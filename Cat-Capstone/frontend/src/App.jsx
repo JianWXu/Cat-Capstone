@@ -8,8 +8,9 @@ import AppLandingPage from './components/routes/landingPageComponents/LandingPag
 import AppRoutes from "./components/routes/Routes"
 import AppSignUp  from './components/routes/SignUp';
 import AppLogin from './components/routes/SignIn';
-import Footer from './Footer'
-import './App.css'
+import AppSwipingPage from './components/routes/swipingComponent/SwipingMain'
+import Footer from './Footer';
+import './App.css';
 
 function App() {
   const INITIAL_STATE = "";
@@ -82,6 +83,7 @@ function App() {
   const shouldShowSignUp = location.pathname === '/signup';
   const shouldShowLogin = location.pathname === '/login';
   const shouldShowLanding = location.pathname === '/home';
+  const shouldShowSwiping = location.pathname === '/swipe'
 
 
   return (
@@ -93,7 +95,8 @@ function App() {
       {shouldShowLanding && <AppLandingPage shouldShowLanding={shouldShowLanding} />}
       {shouldShowLogin && <AppLogin authLoginInfo={authLoginInfo} shouldShowLogin={shouldShowLogin} />}
       {shouldShowSignUp && <AppSignUp signUp={signUp} shouldShowSignUp={shouldShowSignUp} />}
-      <Footer /> {/* Include Footer component */}
+      {shouldShowSwiping && <AppSwipingPage shouldShowSwiping={shouldShowSwiping}/>}
+      <Footer />
     </>
   )
 }

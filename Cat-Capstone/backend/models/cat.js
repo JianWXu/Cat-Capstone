@@ -174,7 +174,7 @@ class Cat {
     };
   }
 
-  static async getRandomCat(userId) {
+  static async getRandomCat(username) {
     // Get the total number of rows in the cats table
     const { data: catData, error: catError } = await db
       .from("cats")
@@ -187,26 +187,26 @@ class Cat {
 
     const totalCats = catData.count;
 
-    // Loop until a unique catId is found that's not in the swipes table for the user
-    while (true) {
-      const randomCatId = Math.floor(Math.random() * totalCats) + 1;
+    // Fetch swiped cat IDs for the user
+    const { data: swipedData, error: swipedError } = await db
+      .from("swipes")
+      .select("catId")
+      .eq("username", username);
 
-      const { data: swipeData, error: swipeError } = await db
-        .from("swipes")
-        .select("*")
-        .eq("userId", userId)
-        .eq("catId", randomCatId);
-
-      if (swipeError) {
-        console.error(swipeError);
-        throw new Error("Error fetching swipes");
-      }
-
-      // If the catId doesn't exist in the swipes table for the current user, return it
-      if (swipeData.length === 0) {
-        return randomCatId;
-      }
+    if (swipedError) {
+      console.error(swipedError);
+      throw new Error("Error fetching swiped cats");
     }
+
+    const swipedCatIds = swipedData.map(swipe => swipe.catId);
+    let randomCatId;
+
+    // Generate random cat ID and check if it's not in swipedCatIds
+    do {
+      randomCatId = Math.floor(Math.random() * totalCats) + 1;
+    } while (swipedCatIds.includes(randomCatId));
+
+    return randomCatId;
   }
 
   static async updateCat(catId, data) {

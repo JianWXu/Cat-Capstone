@@ -80,5 +80,25 @@ class CatApi {
       throw err;
     }
   }
+
+  static async getRandomCat(username) {
+    try {
+      let res = await this.request(`swipe`, { username }, "get");
+      return res.cat;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  static async swipeRandomCat(data) {
+    try {
+      let { username, catId, liked } = data;
+      let res = await this.request(`swipe`, { username, catId, liked }, "post");
+      return res;
+    } catch (err) {
+      console.error("Swipe Error:", err);
+      throw err;
+    }
+  }
 }
 export default CatApi;

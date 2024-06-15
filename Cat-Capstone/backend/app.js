@@ -13,6 +13,7 @@ const { authenticateJWT } = require("./middleware/auth");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const catsRoutes = require("./routes/cats");
+const swipeRoutes = require("./routes/swipes");
 
 const morgan = require("morgan");
 const app = express();
@@ -25,6 +26,7 @@ app.use(authenticateJWT);
 app.use("/auth", authRoutes);
 app.use("/cats", catsRoutes);
 app.use("/user", userRoutes);
+app.use("/swipe", swipeRoutes);
 
 // app.use(express.static(path.join(__dirname, "build")));
 // app.get("*", (req, res) => {
