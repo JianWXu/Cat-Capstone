@@ -14,7 +14,7 @@ const { BCRYPT_WORK_FACTOR } = require("../config.js");
 class User {
   /** authenticate user with username, password.
    *
-   * Returns { username, first_name, last_name, email, is_admin }
+   * Returns { username, first_name, last_name, email }
    *
    * Throws UnauthorizedError is user not found or wrong password.
    **/
@@ -22,17 +22,10 @@ class User {
   static async authenticate({ email, password }) {
     // Try to sign in the user using Supabase
 
-    console.log("email before calling signIn", email);
-    console.log("password before calling signIn", password);
     const { data, error } = await db.auth.signInWithPassword({
       email,
       password,
     });
-
-    console.log("email after calling signIn", email);
-    console.log("password after calling signIn", password);
-    console.log("error", error);
-    console.log(data);
 
     if (error) {
       throw new UnauthorizedError("Invalid username/password");
@@ -52,25 +45,17 @@ class User {
       throw new UnauthorizedError("User metadata is missing");
     }
 
-    const { username, first_name, last_name, is_admin } = user_metadata;
+    const { username, first_name, last_name } = user_metadata;
 
     return {
       username: username || "",
       first_name: first_name || "",
       last_name: last_name || "",
       email: userEmail || "",
-      is_admin: is_admin || false,
     };
   }
 
-  static async register({
-    username,
-    password,
-    first_name,
-    last_name,
-    email,
-    isAdmin,
-  }) {
+  static async register({ username, password, first_name, last_name, email }) {
     try {
       // Check if the username already exists
       const { data: existingUser, error: usernameCheckError } = await db
@@ -115,7 +100,6 @@ class User {
             email,
             first_name,
             last_name,
-            is_admin: isAdmin,
           },
           { onConflict: ["username"] }
         );
@@ -134,7 +118,6 @@ class User {
         first_name: first_name,
         last_name: last_name,
         email: email,
-        isAdmin: isAdmin,
       };
     } catch (error) {
       console.error("Registration Error:", error.message);

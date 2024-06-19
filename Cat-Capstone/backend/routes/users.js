@@ -8,7 +8,7 @@ const db = require("../db");
 const multer = require("multer");
 const upload = multer();
 const bodyParser = require("body-parser");
-const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../middleware/auth");
+const { ensureCorrectUser } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
 const Cat = require("../models/cat");
@@ -33,18 +33,14 @@ router.use(bodyParser.urlencoded({ extended: true }));
  * Authorization required: admin or same user-as-:username
  **/
 
-router.get(
-  "/:username",
-  // ensureCorrectUserOrAdmin,
-  async function (req, res, next) {
-    try {
-      const user = await User.get(req.params.username);
-      return res.json({ user });
-    } catch (err) {
-      return next(err);
-    }
+router.get("/:username", ensureCorrectUser, async function (req, res, next) {
+  try {
+    const user = await User.get(req.params.username);
+    return res.json({ user });
+  } catch (err) {
+    return next(err);
   }
-);
+});
 
 /** PATCH /[username] { user } => { user }
  *
@@ -56,28 +52,24 @@ router.get(
  * Authorization required: admin or same-user-as-:username
  **/
 
-router.patch(
-  "/:username",
-  // ensureCorrectUserOrAdmin,
-  async function (req, res, next) {
-    try {
-      const validator = jsonschema.validate(req.body, userUpdateSchema);
-      if (!validator.valid) {
-        const errs = validator.errors.map(e => e.stack);
-        throw new BadRequestError(errs);
-      }
-
-      const user = await User.update(req.params.username, req.body);
-      return res.json({ user });
-    } catch (err) {
-      return next(err);
+router.patch("/:username", async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, userUpdateSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
     }
+
+    const user = await User.update(req.params.username, req.body);
+    return res.json({ user });
+  } catch (err) {
+    return next(err);
   }
-);
+});
 
 router.patch(
   "/:username/cats/:id",
-  ensureCorrectUserOrAdmin,
+  ensureCorrectUser,
   async function (req, res, next) {
     try {
       const validator = jsonschema.validate(req.body, catUpdateSchema);
@@ -104,18 +96,14 @@ router.patch(
  * Authorization required: admin or same-user-as-:username
  **/
 
-router.delete(
-  "/:username",
-  // ensureCorrectUserOrAdmin,
-  async function (req, res, next) {
-    try {
-      await User.remove(req.params.username);
-      return res.json({ deleted: req.params.username });
-    } catch (err) {
-      return next(err);
-    }
+router.delete("/:username", ensureCorrectUser, async function (req, res, next) {
+  try {
+    await User.remove(req.params.username);
+    return res.json({ deleted: req.params.username });
+  } catch (err) {
+    return next(err);
   }
-);
+});
 
 /** POST /[username]/cats/[id]
  *
@@ -170,6 +158,5 @@ router.post(
     }
   }
 );
-
 
 module.exports = router;

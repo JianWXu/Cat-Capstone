@@ -1,43 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import CatApi from '../../../../../api.js';
-import SwipeCard from './SwipingCard'; 
+import React, { useState, useEffect, useContext } from 'react';
+import UserContext from "../../../userContext";
+import CatApi from '../../../../../api';
+import SwipeCard from './SwipingCard';
 
-const SwipeComponent = ({ username, shouldShowSwiping }) => {
+const SwipingMain = ({ shouldShowSwiping }) => {
+
+  const {user} = useContext(UserContext)
   const [cat, setCat] = useState(null);
+  const [error, setError] = useState(null);
+
+  const username = JSON.parse(user).username
 
   const fetchRandomCat = async () => {
     try {
       const response = await CatApi.getRandomCat(username);
-      setCat(response);
+      setCat(response); // Assuming the response is the cat data
+      setError(null); // Clear previous errors if successful
     } catch (err) {
       console.error('Error fetching random cat:', err);
+      setError('Could not fetch cat. Please try again later.');
     }
   };
 
   useEffect(() => {
-    fetchRandomCat();
-  }, []);
-
-  const handleSwipe = async (direction, catId) => {
-    const liked = direction === 'right';
-    try {
-      await CatApi.swipeRandomCat({ username, catId, liked });
+    if (shouldShowSwiping) {
       fetchRandomCat();
-    } catch (err) {
-      console.error('Error adding swipe:', err);
     }
-  };
+  }, [shouldShowSwiping]);
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
-    shouldShowSwiping && (
-        <div className="swipe-component">
-      {cat && (
-        <SwipeCard cat={cat} onSwipe={handleSwipe} />
+    <div>
+      {cat ? (
+        <SwipeCard cat={cat} fetchRandomCat={fetchRandomCat} />
+      ) : (
+        <div>Loading...</div>
       )}
     </div>
-    )
-    
   );
 };
 
-export default SwipeComponent;
+export default SwipingMain;

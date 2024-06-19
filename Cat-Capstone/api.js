@@ -40,17 +40,14 @@ class CatApi {
       let res = await this.request(`user/${username}`);
       return res;
     } catch (err) {
-      console.err("Error finding user", err);
+      console.error("Error finding user", err);
     }
   }
 
   static async verifyUserSignIn(data) {
     let { email, password } = data;
     try {
-      let res = await this.request(`/auth/token`, { email, password }, "post");
-      console.log(res.token);
-      CatApi.token = res.token;
-      localStorage.setItem("userToken", res.token);
+      let res = await this.request(`auth/login`, { email, password }, "post");
       return res.token;
     } catch (err) {
       console.error("Error logging in:", err);
@@ -94,7 +91,12 @@ class CatApi {
 
   static async getRandomCat(username) {
     try {
-      let res = await this.request(`swipe`, { username }, "get");
+      // GET request to fetch a random cat
+      let res = await this.request(
+        `swipe/random?username=${username}`,
+        null,
+        "get"
+      );
       return res.cat;
     } catch (err) {
       throw err;
@@ -103,7 +105,6 @@ class CatApi {
 
   static async swipeRandomCat(data) {
     try {
-      let { username, catId, liked } = data;
       let res = await this.request(`swipe`, { username, catId, liked }, "post");
       return res;
     } catch (err) {

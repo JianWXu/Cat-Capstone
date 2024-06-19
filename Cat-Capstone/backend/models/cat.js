@@ -128,85 +128,107 @@ class Cat {
   }
 
   static async get(id) {
-    const { data: cat, error: catError } = await db
-      .from("cats")
-      .select(
+    try {
+      const { data: cat, error: catError } = await db
+        .from("cats")
+        .select(
+          `
+          id,
+          name,
+          username,
+          breed,
+          age,
+          outdoor,
+          friendly,
+          pictures (
+            picture_id,
+            title,
+            description,
+            image_url AS file_path,
+            upload_date
+          )
         `
-        id,
-        name,
-        username,
-        breed,
-        age,
-        outdoor,
-        friendly,
-        pictures (
-          picture_id,
-          title,
-          description,
-          image_url AS file_path,
-          upload_date
         )
-      `
-      )
-      .eq("id", id)
-      .single();
+        .eq("id", id)
+        .single();
 
-    // Handle errors
-    if (catError) {
-      if (catError.code === "PGRST116") {
-        // Code for "row not found"
-        throw new Error(`No cat found with id: ${id}`);
+      if (catError) {
+        if (catError.code === "PGRST116") {
+          // Code for "row not found"
+          throw new Error(`No cat found with id: ${id}`);
+        }
+        console.error("Error fetching cat:", catError);
+        throw new Error("Error fetching cat");
       }
-      console.error("Error fetching cat:", catError);
-      throw new Error("Error fetching cat");
-    }
 
-    // Process and return the result
-    return {
-      id: cat.id,
-      name: cat.name,
-      username: cat.username,
-      breed: cat.breed,
-      age: cat.age,
-      outdoor: cat.outdoor,
-      friendly: cat.friendly,
-      pictures: cat.pictures || [],
-    };
+      return {
+        id: cat.id,
+        name: cat.name,
+        username: cat.username,
+        breed: cat.breed,
+        age: cat.age,
+        outdoor: cat.outdoor,
+        friendly: cat.friendly,
+        pictures: cat.pictures || [],
+      };
+    } catch (err) {
+      console.error("Error in get:", err);
+      throw new Error("Error getting cat");
+    }
   }
 
   static async getRandomCat(username) {
-    // Get the total number of rows in the cats table
-    const { data: catData, error: catError } = await db
-      .from("cats")
-      .select("id", { count: "exact", head: true });
+    try {
+      // Get the total number of rows in the cats table
+      const { data: catData, error: catError } = await db
+        .from("cats")
+        .select("id", { count: "exact", head: true });
 
-    if (catError) {
-      console.error(catError);
-      throw new Error("Error fetching total number of cats");
+      if (catError) {
+        console.error(catError);
+        throw new Error("Error fetching total number of cats");
+      }
+
+      if (!catData || !catData.count) {
+        throw new Error("No cats found in the database");
+      }
+
+      const totalCats = catData.count;
+      if (totalCats === 0) throw new Error("No cats available");
+
+      // Fetch swiped cat IDs for the user
+      const { data: swipedData, error: swipedError } = await db
+        .from("swipes")
+        .select("cat_id")
+        .eq("username", username);
+
+      if (swipedError) {
+        console.error(swipedError);
+        throw new Error("Error fetching swiped cats");
+      }
+
+      const swipedCatIds = swipedData.map(swipe => swipe.cat_id);
+      let randomCatId;
+
+      // Ensure that there are cats that the user hasn't swiped
+      if (swipedCatIds.length >= totalCats) {
+        throw new Error("No more cats to swipe");
+      }
+
+      // Generate random cat ID and check if it's not in swipedCatIds
+      do {
+        randomCatId = Math.floor(Math.random() * totalCats) + 1;
+      } while (swipedCatIds.includes(randomCatId));
+
+      if (!randomCatId) {
+        throw new Error("Failed to generate a random cat ID");
+      }
+
+      return randomCatId;
+    } catch (err) {
+      console.error("Error in getRandomCat:", err);
+      throw new Error("Error getting random cat");
     }
-
-    const totalCats = catData.count;
-
-    // Fetch swiped cat IDs for the user
-    const { data: swipedData, error: swipedError } = await db
-      .from("swipes")
-      .select("catId")
-      .eq("username", username);
-
-    if (swipedError) {
-      console.error(swipedError);
-      throw new Error("Error fetching swiped cats");
-    }
-
-    const swipedCatIds = swipedData.map(swipe => swipe.catId);
-    let randomCatId;
-
-    // Generate random cat ID and check if it's not in swipedCatIds
-    do {
-      randomCatId = Math.floor(Math.random() * totalCats) + 1;
-    } while (swipedCatIds.includes(randomCatId));
-
-    return randomCatId;
   }
 
   static async updateCat(catId, data) {
