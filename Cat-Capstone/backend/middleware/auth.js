@@ -17,12 +17,18 @@ const { UnauthorizedError } = require("../expressError");
 function authenticateJWT(req, res, next) {
   try {
     const authHeader = req.headers && req.headers.authorization;
+    console.log("Auth Header:", authHeader);
     if (authHeader) {
       const token = authHeader.replace(/^[Bb]earer /, "").trim();
-      res.locals.user = jwt.verify(token, SECRET_KEY);
+      console.log("Token:", token);
+
+      const payload = jwt.verify(token, SECRET_KEY);
+      console.log("Payload:", payload);
+      res.locals.user = payload;
     }
     return next();
   } catch (err) {
+    console.error("Error in authenticateJWT middleware:", err);
     return next();
   }
 }
@@ -51,12 +57,15 @@ function ensureCorrectUser(req, res, next) {
   try {
     const user = res.locals.user;
 
-    console.log(user);
+    console.log("User from token:", user);
+    console.log("Username from params:", req.params.username);
+
     if (!(user && user.username === req.params.username)) {
       throw new UnauthorizedError();
     }
     return next();
   } catch (err) {
+    console.error("Error in ensureCorrectUser middleware:", err);
     return next(err);
   }
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocalStorage } from "@uidotdev/usehooks";
+import useLocalStorage from './useLocalStorage';
 import { useLocation, useNavigate } from "react-router-dom";
 import CatApi from '../../api';
 import AppNavBar from './components/routes/navbarComponents/NavBar';
@@ -14,30 +14,36 @@ import UserContext from './userContext';
 import './App.css';
 
 function App() {
-  const INITIAL_STATE = "";
+  const INITIAL_STATE = null;
 
-  const [userToken, setUserToken] = useState(INITIAL_STATE);
   const [username, setUsername] = useState(INITIAL_STATE);
   const [user, setUser] = useLocalStorage("user", INITIAL_STATE);
+  const [userToken, setUserToken] = useLocalStorage("userToken", INITIAL_STATE);
 
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
     async function getUser() {
-      const token = localStorage.getItem('userToken');
-      if (!token) {
-        console.error("Token not found in local storage");
-        return;
-      }
       try {
-        const headers = { Authorization: `Bearer ${token}` };
-        // const res = await CatApi.getUser(username, { headers });
-        const res = await CatApi.getUser(username)
+        const token = localStorage.getItem('userToken');
+        console.log("Retrieved token from localStorage:", token);
+        if (!token) {
+          console.error("Token not found in local storage");
+          return;
+        }
   
-        console.log(res); // Check the response structure here
-        // setUser(res.user); // Assuming res.user contains the user data
-        setUserToken(token);
+        const headers = { Authorization: `Bearer ${token.replace(/^"(.*)"$/, '$1')}` };
+        const res = await CatApi.getUser(username, { headers });
+        console.log("getUser response:", res);
+  
+        if (res && res.user) {
+          setUsername(res.user.username)
+          setUser(res.user);
+          setUserToken(token.replace(/^"(.*)"$/, '$1'));
+        } else {
+          console.error("Invalid response from getUser API:", res);
+        }
       } catch (err) {
         console.error("Error finding user", err);
       }
@@ -46,43 +52,51 @@ function App() {
     if (username) {
       getUser();
     }
-  }, [username, setUser]);
-  
+  }, [username]);  // Dependency array only includes `username` to avoid infinite loop
 
   const authLoginInfo = async (data) => {
-  try {
-    const {username } = data
-    const res = await CatApi.verifyUserSignIn(data);
-    if (res) {
-      localStorage.setItem('userToken', res.token);
-      setUserToken(res);
-      setUsername(data.username);
-      
-      // Fetch user data separately after setting the token
-      const headers = { Authorization: `Bearer ${res}` };
-      const userData = await CatApi.getUser(data.username, {headers});
-      setUser(userData.user); // Assuming userData.user contains the user data
-    } else {
-      console.error("Invalid response from login API:", res);
+    try {
+      const res = await CatApi.verifyUserSignIn(data);
+      console.log("authLoginInfo response:", res);
+      if (res) {
+        const token = res.replace(/\"/g, "");  // Remove any quotes if present
+        localStorage.setItem('userToken', token);
+        setUserToken(token);
+  
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const fetchedUsername = payload.username;
+        setUsername(fetchedUsername);
+  
+        const headers = { Authorization: `Bearer ${token}` };
+        const userData = await CatApi.getUser(fetchedUsername, { headers });
+        console.log("userData:", userData);
+        if (userData && userData.user) {
+          setUser(userData.user);
+        } else {
+          console.error("Invalid response from getUser API:", userData);
+        }
+      } else {
+        console.error("Invalid response from login API:", res);
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
     }
-  } catch (error) {
-    console.error("Error logging in:", error);
-  }
-};
+  };
   
-  
-
   const signUp = async (info) => {
     try {
       const res = await CatApi.makeUser(info);
-      setUserToken(res.token);
-      setUsername(info.username);
-
-      console.log("new username", info.username);
+      if (res && res.token) {
+        console.log('New user registered successfully');
+        // Do not store anything in local storage or state
+      } else {
+        console.error('Invalid response from signUp API:', res);
+      }
     } catch (err) {
-      console.error("Error signing up:", err);
+      console.error('Error signing up:', err);
     }
   };
+  
 
   const signOut = () => {
     setUserToken(INITIAL_STATE);
@@ -91,26 +105,25 @@ function App() {
     localStorage.removeItem('userToken');
     localStorage.removeItem('user');
     navigate('/login');
-    console.log("signed out", username);
+    console.log("Signed out", username);
   };
 
   const shouldShowSignUp = location.pathname === '/signup';
   const shouldShowLogin = location.pathname === '/login';
   const shouldShowLanding = location.pathname === '/home';
   const shouldShowSwiping = location.pathname === '/swipe';
-  const shouldShowPatch = location.pathname === "/profile"
-  
+  const shouldShowPatch = location.pathname === "/profile";
 
   return (
     <>
-      <UserContext.Provider value={{ user }}>
+      <UserContext.Provider value={{ user, userToken, signOut }}>
         <AppNavBar signOut={signOut} />
         <AppRoutes />
         {shouldShowLanding && <AppLandingPage shouldShowLanding={shouldShowLanding} />}
         {shouldShowLogin && <AppLogin authLoginInfo={authLoginInfo} shouldShowLogin={shouldShowLogin} />}
         {shouldShowSignUp && <AppSignUp signUp={signUp} shouldShowSignUp={shouldShowSignUp} />}
         {shouldShowSwiping && <AppSwipingPage shouldShowSwiping={shouldShowSwiping} />}
-        {shouldShowPatch && <AppProfile  shouldShowPatch={shouldShowPatch} />}
+        {shouldShowPatch && <AppProfile shouldShowPatch={shouldShowPatch} />}
         <Footer />
       </UserContext.Provider>
     </>

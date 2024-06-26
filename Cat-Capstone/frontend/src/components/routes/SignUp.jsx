@@ -23,10 +23,10 @@ function AppSignUp({ signUp, shouldShowSignUp }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      signUp({ ...formData });
+      await signUp({ ...formData });
       navigate('/login');
       console.log('signup successful. Navigating to "/login"...');
     } catch (err) {

@@ -5,13 +5,18 @@ import axios from "axios";
 let BASE_URL = "http://localhost:3001";
 
 class CatApi {
-  static token = localStorage.getItem("userToken");
+  static get token() {
+    return localStorage.getItem("userToken");
+  }
 
   static async request(endpoint, data = {}, method = "get") {
     console.debug("API Call:", endpoint, data, method);
 
     const url = `${BASE_URL}/${endpoint}`;
-    const headers = { Authorization: `Bearer ${CatApi.token}` };
+    const token = CatApi.token || ""; // Default to empty string if token is null or undefined
+    const headers = {
+      Authorization: `Bearer ${token.replace(/^"(.*)"$/, "$1")}`,
+    };
     console.log("headers", headers);
     const params = method === "get" ? data : {};
 
@@ -20,24 +25,14 @@ class CatApi {
       return response.data;
     } catch (err) {
       console.error("API Error:", err);
-      if (
-        err.response &&
-        err.response.data &&
-        err.response.data.error &&
-        err.response.data.error.message
-      ) {
-        throw err.response.data.error.message;
-      } else if (err.message) {
-        throw err.message;
-      } else {
-        throw err;
-      }
+      throw err; // Ensure errors are properly thrown for better debugging
     }
   }
 
   static async getUser(username) {
     try {
-      let res = await this.request(`user/${username}`);
+      const res = await this.request(`user/${username}`);
+      console.log("getUser API response:", res);
       return res;
     } catch (err) {
       console.error("Error finding user", err);

@@ -39,13 +39,21 @@ class User {
     const { user } = data;
 
     // Access user metadata directly
-    const { email: userEmail, user_metadata } = user;
+    const { email: userEmail } = user;
 
-    if (!user_metadata) {
-      throw new UnauthorizedError("User metadata is missing");
+    const { data: userData, error: userError } = await db
+      .from("users")
+      .select("username, first_name, last_name")
+      .eq("email", userEmail);
+
+    if (userError) {
+      throw new NotFoundError("User not found");
     }
+    console.log(userData);
+    const { username, first_name, last_name } = userData[0];
 
-    const { username, first_name, last_name } = user_metadata;
+    if (username && username.length === 0) {
+    }
 
     return {
       username: username || "",

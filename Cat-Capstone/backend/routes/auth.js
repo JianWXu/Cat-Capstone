@@ -22,6 +22,7 @@ router.post("/login", async function (req, res, next) {
     }
 
     const user = await User.authenticate(req.body);
+    console.log("login router backend user", user);
     const token = createToken(user);
     return res.json({ token });
   } catch (err) {
@@ -42,7 +43,7 @@ router.post("/login", async function (req, res, next) {
 router.post("/register", async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, userNewSchema);
-    console.log(req.body);
+    console.log("register router backend request body", req.body);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
