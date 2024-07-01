@@ -9,7 +9,7 @@ const SwipingMain = ({ shouldShowSwiping }) => {
   const [cat, setCat] = useState(null);
   const [error, setError] = useState(null);
 
-  const username = JSON.parse(user).username
+  const username = user.username
 
   const fetchRandomCat = async () => {
     try {

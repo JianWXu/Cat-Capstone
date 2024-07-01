@@ -177,6 +177,25 @@ class Cat {
     }
   }
 
+  static async getUserCats(username) {
+    try {
+      const { data: catData, error: findCatError } = await db
+        .from("cats")
+        .select("*") // Select all fields for each cat
+        .eq("username", username);
+  
+      if (findCatError) {
+        throw new Error(`Error finding cats for username ${username}: ${findCatError.message}`);
+      }
+  
+      return catData; // Return all cats associated with the username
+    } catch (err) {
+      console.error("Error fetching user's cats:", err);
+      throw new Error("Failed to fetch user's cats");
+    }
+  }
+  
+
   static async getRandomCat(username) {
     try {
       // Get the total number of rows in the cats table

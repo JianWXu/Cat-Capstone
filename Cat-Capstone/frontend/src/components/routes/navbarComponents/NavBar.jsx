@@ -24,18 +24,22 @@ function AppNavBar() {
                 <LinkContainer to="/profile">
                   <Nav.Link className="nav-link">{user.username}</Nav.Link>
                 </LinkContainer>
-                <LinkContainer to="/swipe">
-                  <Nav.Link className="nav-link">Swipe</Nav.Link>
+                <LinkContainer to="/addCat">
+                  <Nav.Link className="nav-link">Add Cat</Nav.Link>
                 </LinkContainer>
-                <Nav.Link className="nav-link" onClick={signOut}>Log out</Nav.Link>
+                <LinkContainer to="/swipe">
+                  <Nav.Link className="nav-link">swipe</Nav.Link>
+                </LinkContainer>
+                
+                <Nav.Link className="nav-link" onClick={signOut}>log out</Nav.Link>
               </>
             ) : (
               <>
                 <LinkContainer to="/login">
-                  <Nav.Link className="nav-link">Login</Nav.Link>
+                  <Nav.Link className="nav-link">login</Nav.Link>
                 </LinkContainer>
                 <LinkContainer to="/signup">
-                  <Nav.Link className="nav-link">Signup</Nav.Link>
+                  <Nav.Link className="nav-link">signup</Nav.Link>
                 </LinkContainer>
               </>
             )}

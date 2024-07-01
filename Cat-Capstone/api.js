@@ -68,10 +68,29 @@ class CatApi {
 
   static async patchUser(username, data) {
     try {
-      let res = await this.request(`users/${username}`, data, "patch");
+      let res = await this.request(`user/${username}`, data, "patch");
       return res;
     } catch (err) {
       console.error("Error updating user", err);
+      throw err;
+    }
+  }
+
+  static async addCat(username, formData) {
+    try {
+      const res = await this.request(
+        `user/${username}/cats/new`,
+        formData,
+        "post",
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return res;
+    } catch (err) {
+      console.error("Error adding cat", err);
       throw err;
     }
   }
@@ -92,6 +111,7 @@ class CatApi {
         null,
         "get"
       );
+      console.log(res);
       return res.cat;
     } catch (err) {
       throw err;

@@ -6,14 +6,12 @@ import './userProfile.css';
 
 function AppProfile({ shouldShowPatch }) {
     const { user } = useContext(UserContext);
-    const userObj = JSON.parse(user);
     const navigate = useNavigate();
 
     const INITIAL_STATE = {
-        first_name: userObj.first_name,
-        last_name: userObj.last_name,
-        email: userObj.email,
-        password: '*' // Initial state for password
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email
     };
 
     const [formData, setFormData] = useState(INITIAL_STATE);
@@ -22,9 +20,14 @@ function AppProfile({ shouldShowPatch }) {
 
     const updateProfile = async (data) => {
         try {
-            const res = await CatApi.patchUser(userObj.username, data);
+            const res = await CatApi.patchUser(user.username, data);
+            setMessage("Update successful");
+            setMessageType("success");
+            console.log("Response from server:", res);
             return res;
         } catch (err) {
+            setMessage("Error updating profile");
+            setMessageType("error");
             console.error("Error updating user", err);
             throw err;
         }
@@ -42,12 +45,8 @@ function AppProfile({ shouldShowPatch }) {
         e.preventDefault();
         try {
             await updateProfile(formData);
-            setMessage("Update successful");
-            setMessageType("success");
         } catch (err) {
             console.error("Error updating profile", err);
-            setMessage(err.message);
-            setMessageType("error");
         }
     };
 
@@ -58,9 +57,15 @@ function AppProfile({ shouldShowPatch }) {
     }, [user, navigate]);
 
     return (
-        <div className="profile-container">
+        <div>
+            {message && (
+                <div className={`flash-message ${messageType}`}>
+                    {message}
+                </div>
+            )}
+
             {shouldShowPatch && (
-                <>
+                <div className="profile-container">
                     <form className="profile-form" onSubmit={handleSubmit}>
                         <label htmlFor="first_name">First Name:</label>
                         <input
@@ -89,20 +94,10 @@ function AppProfile({ shouldShowPatch }) {
                             onChange={handleChange}
                         />
 
-                        <label htmlFor="password">Password:</label>
-                        <input
-                            id="password"
-                            type="password"
-                            name="password"
-                            value={Array(formData.password.length + 1).join('*')}
-                            onChange={handleChange}
-                        />
-
                         <button type="submit">Submit</button>
                     </form>
-
-                    {message && <div className={`message ${messageType}`}>{message}</div>}
-                </>
+                    <button onClick={() => navigate('/editCats')}>Edit Cats</button> {/* New Button */}
+                </div>
             )}
         </div>
     );

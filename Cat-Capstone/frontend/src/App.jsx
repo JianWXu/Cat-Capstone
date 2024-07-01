@@ -9,6 +9,7 @@ import AppSignUp from './components/routes/SignUp';
 import AppLogin from './components/routes/SignIn';
 import AppSwipingPage from './components/routes/swipingComponent/SwipingMain';
 import AppProfile from './components/routes/userProfileComponent/userProfile';
+import AppAddCat from './components/useCatComponent/addCat'
 import Footer from './Footer';
 import UserContext from './userContext';
 import './App.css';
@@ -112,7 +113,8 @@ function App() {
   const shouldShowLogin = location.pathname === '/login';
   const shouldShowLanding = location.pathname === '/home';
   const shouldShowSwiping = location.pathname === '/swipe';
-  const shouldShowPatch = location.pathname === "/profile";
+  const shouldShowPatch = location.pathname === '/profile';
+  const shouldShowAddCat = location.pathname === '/addCat';
 
   return (
     <>
@@ -124,6 +126,7 @@ function App() {
         {shouldShowSignUp && <AppSignUp signUp={signUp} shouldShowSignUp={shouldShowSignUp} />}
         {shouldShowSwiping && <AppSwipingPage shouldShowSwiping={shouldShowSwiping} />}
         {shouldShowPatch && <AppProfile shouldShowPatch={shouldShowPatch} />}
+        {shouldShowAddCat && <AppAddCat shouldShowAddCat={shouldShowAddCat} />}
         <Footer />
       </UserContext.Provider>
     </>

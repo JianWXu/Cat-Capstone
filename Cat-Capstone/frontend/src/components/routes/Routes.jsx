@@ -4,6 +4,7 @@ import AppLogin from './SignIn';
 import AppSwipingPage from './swipingComponent/SwipingMain';
 import AppProfile from './userProfileComponent/userProfile';
 import PrivateRoute from '../../PrivateRoute';
+import AppAddCat from '../useCatComponent/addCat'
 
 function AppRoutes() {
   return (
@@ -20,6 +21,7 @@ function AppRoutes() {
       />
       <Route path="/swipe" element={<AppSwipingPage />} />
       <Route path="/profile" element={<AppProfile />} />
+      <Route path="/addCat" element={<AppAddCat/>}/>
       <Route path="*" element={<Navigate to="/home" />} />
     </Routes>
   );
