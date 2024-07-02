@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import UserContext from "../../../userContext";
+import UserContext from "../../../UserContext";
 import { useNavigate } from "react-router-dom";
 import CatApi from '../../../../../api';
 import './userProfile.css'; 
@@ -96,7 +96,7 @@ function AppProfile({ shouldShowPatch }) {
 
                         <button type="submit">Submit</button>
                     </form>
-                    <button onClick={() => navigate('/editCats')}>Edit Cats</button> {/* New Button */}
+                    <button onClick={() => navigate('/userCats')}>Edit Cats</button> {/* New Button */}
                 </div>
             )}
         </div>

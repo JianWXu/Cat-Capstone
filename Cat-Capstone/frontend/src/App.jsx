@@ -9,9 +9,10 @@ import AppSignUp from './components/routes/SignUp';
 import AppLogin from './components/routes/SignIn';
 import AppSwipingPage from './components/routes/swipingComponent/SwipingMain';
 import AppProfile from './components/routes/userProfileComponent/userProfile';
-import AppAddCat from './components/useCatComponent/addCat'
+import AppAddCat from './components/routes/userCatComponent/addCat';
+import AppUserCats from './components/routes/userCatComponent/userCats';
 import Footer from './Footer';
-import UserContext from './userContext';
+import UserContext from './UserContext'; // Ensure this import matches the context you are using
 import './App.css';
 
 function App() {
@@ -53,14 +54,14 @@ function App() {
     if (username) {
       getUser();
     }
-  }, [username]);  // Dependency array only includes `username` to avoid infinite loop
+  }, [username]);
 
   const authLoginInfo = async (data) => {
     try {
       const res = await CatApi.verifyUserSignIn(data);
       console.log("authLoginInfo response:", res);
       if (res) {
-        const token = res.replace(/\"/g, "");  // Remove any quotes if present
+        const token = res.replace(/\"/g, "");
         localStorage.setItem('userToken', token);
         setUserToken(token);
   
@@ -83,7 +84,7 @@ function App() {
       console.error("Error logging in:", error);
     }
   };
-  
+
   const signUp = async (info) => {
     try {
       const res = await CatApi.makeUser(info);
@@ -97,7 +98,6 @@ function App() {
       console.error('Error signing up:', err);
     }
   };
-  
 
   const signOut = () => {
     setUserToken(INITIAL_STATE);
@@ -115,21 +115,21 @@ function App() {
   const shouldShowSwiping = location.pathname === '/swipe';
   const shouldShowPatch = location.pathname === '/profile';
   const shouldShowAddCat = location.pathname === '/addCat';
+  const shouldShowUserCats = location.pathname === '/userCats';
 
   return (
-    <>
-      <UserContext.Provider value={{ user, userToken, signOut }}>
-        <AppNavBar signOut={signOut} />
-        <AppRoutes />
-        {shouldShowLanding && <AppLandingPage shouldShowLanding={shouldShowLanding} />}
-        {shouldShowLogin && <AppLogin authLoginInfo={authLoginInfo} shouldShowLogin={shouldShowLogin} />}
-        {shouldShowSignUp && <AppSignUp signUp={signUp} shouldShowSignUp={shouldShowSignUp} />}
-        {shouldShowSwiping && <AppSwipingPage shouldShowSwiping={shouldShowSwiping} />}
-        {shouldShowPatch && <AppProfile shouldShowPatch={shouldShowPatch} />}
-        {shouldShowAddCat && <AppAddCat shouldShowAddCat={shouldShowAddCat} />}
-        <Footer />
-      </UserContext.Provider>
-    </>
+    <UserContext.Provider value={{ user, userToken, signOut }}>
+      <AppNavBar signOut={signOut} />
+      <AppRoutes />
+      <AppLandingPage shouldShowLanding={shouldShowLanding} />
+      <AppLogin authLoginInfo={authLoginInfo} shouldShowLogin={shouldShowLogin} />
+      <AppSignUp signUp={signUp} shouldShowSignUp={shouldShowSignUp} />
+      <AppSwipingPage shouldShowSwiping={shouldShowSwiping} />
+      <AppProfile shouldShowPatch={shouldShowPatch} />
+      <AppAddCat shouldShowAddCat={shouldShowAddCat} />
+      <AppUserCats shouldShowUserCats={shouldShowUserCats} /> 
+      <Footer />
+    </UserContext.Provider>
   );
 }
 

@@ -1,10 +1,11 @@
 import React, { useState, useContext } from 'react';
-import UserContext from '../../userContext';
-import CatApi from '../../../../api';
+import UserContext from '../../../UserContext';
+import CatApi from '../../../../../api';
 import './addCat.css'; // Create this CSS file for styling if needed
 
 function AppAddCat({ shouldShowAddCat }) {
   const { user } = useContext(UserContext);
+
 
   const INITIAL_STATE = {
     name: '',

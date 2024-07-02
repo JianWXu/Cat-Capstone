@@ -17,7 +17,6 @@ class CatApi {
     const headers = {
       Authorization: `Bearer ${token.replace(/^"(.*)"$/, "$1")}`,
     };
-    console.log("headers", headers);
     const params = method === "get" ? data : {};
 
     try {
@@ -72,6 +71,16 @@ class CatApi {
       return res;
     } catch (err) {
       console.error("Error updating user", err);
+      throw err;
+    }
+  }
+
+  static async getUserCats(username) {
+    try {
+      let res = await this.request(`user/${username}/usercats`);
+      return res.catsData;
+    } catch (err) {
+      console.error("Error getting cats", err);
       throw err;
     }
   }

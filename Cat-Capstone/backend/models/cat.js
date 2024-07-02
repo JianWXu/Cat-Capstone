@@ -127,74 +127,128 @@ class Cat {
     return Object.values(catsWithPictures);
   }
 
-  static async get(id) {
+  static async getUserCats(username) {
     try {
-      const { data: cat, error: catError } = await db
+      // Step 1: Fetch cats data
+      const { data: catsData, error: catsError } = await db
         .from("cats")
-        .select(
-          `
-          id,
-          name,
-          username,
-          breed,
-          age,
-          outdoor,
-          friendly,
-          pictures (
-            picture_id,
-            title,
-            description,
-            image_url AS file_path,
-            upload_date
-          )
-        `
-        )
-        .eq("id", id)
-        .single();
+        .select("*")
+        .eq("username", username);
 
-      if (catError) {
-        if (catError.code === "PGRST116") {
-          // Code for "row not found"
-          throw new Error(`No cat found with id: ${id}`);
-        }
-        console.error("Error fetching cat:", catError);
-        throw new Error("Error fetching cat");
+      if (catsError) {
+        console.error("Error fetching cats:", catsError.message);
+        throw new Error("Failed to fetch cats");
       }
 
-      return {
-        id: cat.id,
-        name: cat.name,
-        username: cat.username,
-        breed: cat.breed,
-        age: cat.age,
-        outdoor: cat.outdoor,
-        friendly: cat.friendly,
-        pictures: cat.pictures || [],
-      };
-    } catch (err) {
-      console.error("Error in get:", err);
-      throw new Error("Error getting cat");
+      // Step 2: Fetch pictures data for each cat
+      const catsWithPictures = await Promise.all(
+        catsData.map(async cat => {
+          try {
+            const { data: picturesData, error: picturesError } = await db
+              .from("pictures")
+              .select("*")
+              .eq("cat_id", cat.id);
+
+            if (picturesError) {
+              console.error(
+                `Error fetching pictures for cat ${cat.id}:`,
+                picturesError.message
+              );
+              throw new Error(`Failed to fetch pictures for cat ${cat.id}`);
+            }
+
+            return {
+              id: cat.id,
+              name: cat.name,
+              username: cat.username,
+              breed: cat.breed,
+              age: cat.age,
+              outdoor: cat.outdoor,
+              friendly: cat.friendly,
+              pictures: picturesData || [],
+            };
+          } catch (error) {
+            console.error(
+              `Error fetching pictures for cat ${cat.id}:`,
+              error.message
+            );
+            return null; // Handle error or return empty array/object as needed
+          }
+        })
+      );
+
+      return catsWithPictures.filter(cat => cat !== null); // Filter out any null values
+    } catch (error) {
+      console.error("Error fetching user's cats:", error.message);
+      throw new Error("Failed to fetch user's cats");
     }
   }
 
   static async getUserCats(username) {
     try {
-      const { data: catData, error: findCatError } = await db
+      // Step 1: Fetch cats data
+      const { data: catsData, error: catsError } = await db
         .from("cats")
-        .select("*") // Select all fields for each cat
+        .select("*")
         .eq("username", username);
-  
-      if (findCatError) {
-        throw new Error(`Error finding cats for username ${username}: ${findCatError.message}`);
+
+      if (catsError) {
+        console.error("Error fetching cats:", catsError.message);
+        throw new Error("Failed to fetch cats");
       }
-  
-      return catData; // Return all cats associated with the username
-    } catch (err) {
-      console.error("Error fetching user's cats:", err);
+
+      // Step 2: Fetch pictures data for each cat
+      const catsWithPictures = await Promise.all(
+        catsData.map(async cat => {
+          try {
+            const { data: picturesData, error: picturesError } = await db
+              .from("pictures")
+              .select("*")
+              .eq("cat_id", cat.id);
+
+            if (picturesError) {
+              console.error(
+                `Error fetching pictures for cat ${cat.id}:`,
+                picturesError.message
+              );
+              throw new Error(`Failed to fetch pictures for cat ${cat.id}`);
+            }
+
+            // Map pictures data to include only necessary fields
+            const pictures = picturesData.map(picture => ({
+              picture_id: picture.picture_id,
+              cat_id: picture.cat_id,
+              title: picture.title,
+              image_url: picture.image_url,
+              upload_date: picture.upload_date,
+            }));
+
+            return {
+              id: cat.id,
+              name: cat.name,
+              username: cat.username,
+              breed: cat.breed,
+              age: cat.age,
+              outdoor: cat.outdoor,
+              friendly: cat.friendly,
+              pictures: pictures,
+            };
+          } catch (error) {
+            console.error(
+              `Error fetching pictures for cat ${cat.id}:`,
+              error.message
+            );
+            return null; // Handle error or return empty array/object as needed
+          }
+        })
+      );
+
+      return catsWithPictures.filter(cat => cat !== null); // Filter out any null values
+    } catch (error) {
+      console.error("Error fetching user's cats:", error.message);
       throw new Error("Failed to fetch user's cats");
     }
   }
-  
 
   static async getRandomCat(username) {
     try {

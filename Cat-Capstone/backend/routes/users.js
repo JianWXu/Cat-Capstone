@@ -112,6 +112,19 @@ router.delete("/:username", ensureCorrectUser, async function (req, res, next) {
  * Authorization required: admin or same-user-as-:username
  * */
 
+router.get(
+  "/:username/usercats",
+  ensureCorrectUser,
+  async function (req, res, next) {
+    try {
+      const catsData = await Cat.getUserCats(req.params.username);
+      return res.json({ catsData });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
 router.post(
   "/:username/cats/new",
   upload.single("image"),

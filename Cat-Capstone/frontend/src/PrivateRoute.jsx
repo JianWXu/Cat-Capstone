@@ -1,15 +1,11 @@
-// PrivateRoute.js
-import React from 'react';
+import React, { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
+import UserContext from './UserContext';
 
-const PrivateRoute = ({ children }) => {
-  const userToken = localStorage.getItem('userToken');
+function PrivateRoute({ children }) {
+  const { user } = useContext(UserContext);
 
-  if (userToken) {
-    return <Navigate to="/home" />;
-  }
-
-  return children;
-};
+  return user ? children : <Navigate to="/login" />;
+}
 
 export default PrivateRoute;
