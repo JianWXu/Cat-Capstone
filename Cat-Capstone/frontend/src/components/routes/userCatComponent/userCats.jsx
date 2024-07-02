@@ -1,7 +1,8 @@
-import React, { useContext, useState, useEffect } from 'react';
-import UserContext from '../../../UserContext';
-import { Link } from 'react-router-dom';
+import React, { useContext, useState, useEffect } from "react";
+import UserContext from "../../../UserContext";
+import { Link } from "react-router-dom";
 import CatApi from '../../../../../api';
+import './userCats.css'; // Import the CSS file
 
 function AppUserCats({ shouldShowUserCats }) {
     const { user } = useContext(UserContext);
@@ -12,14 +13,14 @@ function AppUserCats({ shouldShowUserCats }) {
             async function fetchCats() {
                 try {
                     const catsData = await CatApi.getUserCats(user.username);
-                    setCats(catsData); 
+                    setCats(catsData);
                 } catch (err) {
-                    console.error('Error fetching cats:', err);
+                    console.error("Error fetching cats:", err);
                 }
             }
             fetchCats();
         }
-    }, [user, shouldShowUserCats]); 
+    }, [user, shouldShowUserCats]);
 
     return (
         <div>
@@ -35,8 +36,8 @@ function AppUserCats({ shouldShowUserCats }) {
                             </li>
                         ))
                     ) : (
-                        <p>No cats found.</p>
-                    )}
+                            <p>No cats found.</p>
+                        )}
                 </ul>
             )}
         </div>
