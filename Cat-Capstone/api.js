@@ -156,24 +156,27 @@ class CatApi {
     }
   }
 
-  static async getRandomCat(username) {
+  static async getRandomCat() {
     try {
-      // GET request to fetch a random cat
-      let res = await this.request(
-        `swipe/random?username=${username}`,
-        null,
-        "get"
-      );
-      console.log(res);
+      const res = await this.request(`swipe/random`, null, "get");
       return res.cat;
     } catch (err) {
+      console.error("Error getting random cat", err);
       throw err;
     }
   }
 
-  static async swipeRandomCat(data) {
+  static async swipeRandomCat(username, catId, liked) {
     try {
-      let res = await this.request(`swipe`, { username, catId, liked }, "post");
+      console.log(
+        `API Call: swipe {username: '${username}', cat_id: ${catId}, liked: ${liked}} post`
+      ); // Add a log statement
+
+      let res = await this.request(
+        `swipe`,
+        { username, cat_id: catId, liked },
+        "post"
+      );
       return res;
     } catch (err) {
       console.error("Swipe Error:", err);

@@ -127,62 +127,83 @@ class Cat {
     return Object.values(catsWithPictures);
   }
 
-  // static async getUserCats(username) {
-  //   try {
-  //     // Step 1: Fetch cats data
-  //     const { data: catsData, error: catsError } = await db
-  //       .from("cats")
-  //       .select("*")
-  //       .eq("username", username);
+  static async getRandomCat(username) {
+    try {
+      // Get all cat IDs
+      const { data: allCatsData, error: allCatsError } = await db
+        .from("cats")
+        .select("id");
 
-  //     if (catsError) {
-  //       console.error("Error fetching cats:", catsError.message);
-  //       throw new Error("Failed to fetch cats");
-  //     }
+      if (allCatsError) {
+        throw new Error("Error fetching all cat IDs");
+      }
 
-  //     // Step 2: Fetch pictures data for each cat
-  //     const catsWithPictures = await Promise.all(
-  //       catsData.map(async cat => {
-  //         try {
-  //           const { data: picturesData, error: picturesError } = await db
-  //             .from("pictures")
-  //             .select("*")
-  //             .eq("cat_id", cat.id);
+      const allCatIds = allCatsData.map(cat => cat.id);
 
-  //           if (picturesError) {
-  //             console.error(
-  //               `Error fetching pictures for cat ${cat.id}:`,
-  //               picturesError.message
-  //             );
-  //             throw new Error(`Failed to fetch pictures for cat ${cat.id}`);
-  //           }
+      if (allCatIds.length === 0) {
+        throw new Error("No cats available");
+      }
 
-  //           return {
-  //             id: cat.id,
-  //             name: cat.name,
-  //             username: cat.username,
-  //             breed: cat.breed,
-  //             age: cat.age,
-  //             outdoor: cat.outdoor,
-  //             friendly: cat.friendly,
-  //             pictures: picturesData || [],
-  //           };
-  //         } catch (error) {
-  //           console.error(
-  //             `Error fetching pictures for cat ${cat.id}:`,
-  //             error.message
-  //           );
-  //           return null; // Handle error or return empty array/object as needed
-  //         }
-  //       })
-  //     );
+      // Fetch swiped cat IDs for the user
+      const { data: swipedData, error: swipedError } = await db
+        .from("swipes")
+        .select("cat_id")
+        .eq("username", username);
 
-  //     return catsWithPictures.filter(cat => cat !== null); // Filter out any null values
-  //   } catch (error) {
-  //     console.error("Error fetching user's cats:", error.message);
-  //     throw new Error("Failed to fetch user's cats");
-  //   }
-  // }
+      if (swipedError) {
+        throw new Error("Error fetching swiped cats");
+      }
+
+      const swipedCatIds = swipedData.map(swipe => swipe.cat_id);
+
+      // Filter out the swiped cat IDs
+      const availableCatIds = allCatIds.filter(
+        id => !swipedCatIds.includes(id)
+      );
+
+      if (availableCatIds.length === 0) {
+        throw new Error("No more cats to swipe");
+      }
+
+      // Select a random cat ID from the available ones
+      const randomCatId =
+        availableCatIds[Math.floor(Math.random() * availableCatIds.length)];
+
+      console.log("randomCatId:", randomCatId);
+
+      // Fetch cat details including pictures
+      const { data: catDetail, error: detailError } = await db
+        .from("cats")
+        .select(
+          `
+          id,
+          name,
+          username,
+          breed,
+          age,
+          outdoor,
+          friendly,
+          picture_id,
+          pictures!fk_picture_id (
+            image_url,
+            title,
+            description
+          )
+        `
+        )
+        .eq("id", randomCatId)
+        .single();
+
+      if (detailError) {
+        throw new Error("Error fetching cat details");
+      }
+
+      return catDetail;
+    } catch (err) {
+      console.error("Error in getRandomCat:", err);
+      throw new Error("Error getting random cat");
+    }
+  }
 
   static async getUserCats(username) {
     try {
