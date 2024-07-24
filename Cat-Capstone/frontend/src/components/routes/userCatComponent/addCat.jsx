@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
 import UserContext from '../../../UserContext';
 import CatApi from '../../../../../api';
-import './addCat.css'; // Create this CSS file for styling if needed
+import './addCat.css';
 
-function AppAddCat({ shouldShowAddCat }) {
+function AppAddCat() {
   const { user } = useContext(UserContext);
 
 
@@ -68,7 +68,7 @@ function AppAddCat({ shouldShowAddCat }) {
         </div>
       )}
 
-      {shouldShowAddCat && (
+      
         <div className="add-cat-container">
           <form className="add-cat-form" onSubmit={handleSubmit}>
             <label htmlFor="name">Name:</label>
@@ -144,7 +144,7 @@ function AppAddCat({ shouldShowAddCat }) {
             <button type="submit">Add Cat</button>
           </form>
         </div>
-      )}
+      
     </div>
   );
 }

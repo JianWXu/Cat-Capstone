@@ -1,0 +1,82 @@
+/* updateCat.css */
+
+.update-cat-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2rem auto;
+    padding: 2rem;
+    width: 50%;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .update-cat-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .update-cat-form label {
+    margin-top: 1rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .update-cat-form input[type="text"],
+  .update-cat-form input[type="number"],
+  .update-cat-form input[type="file"],
+  .update-cat-form textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .update-cat-form input[type="checkbox"] {
+    margin-right: 0.5rem;
+  }
+  
+  .update-cat-form textarea {
+    resize: vertical;
+    height: 100px;
+  }
+  
+  .update-cat-form button[type="submit"] {
+    margin-top: 1.5rem;
+    padding: 0.75rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  .update-cat-form button[type="submit"]:hover {
+    background-color: #45a049;
+  }
+  
+  .flash-message {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    width: 80%;
+    text-align: center;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  .flash-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  
+  .flash-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+  

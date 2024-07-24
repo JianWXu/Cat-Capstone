@@ -70,23 +70,21 @@ router.patch("/:username", async function (req, res, next) {
 router.patch(
   "/:username/cats/:id",
   ensureCorrectUser,
+  upload.single("image"),
   async function (req, res, next) {
     try {
-      const validator = jsonschema.validate(req.body, catUpdateSchema);
-      if (!validator.valid) {
-        const errs = validator.errors.map(e => e.stack);
-        throw new BadRequestError(errs);
-      }
-      const user = User.get(req.params.user);
-      if (!user) {
-        const errs = validator.errors.map(e => e.stack);
-        throw new BadRequestError(errs);
-      }
+      const { id } = req.params;
+      const catData = req.body;
+      const imageFile = req.file;
 
-      const cat = await Cat.updateCat(req.params.id, req.body);
-      return res.json({ cat });
+      const updatedCat = await Cat.updateCat(id, {
+        ...catData,
+        imageFile,
+      });
+
+      res.json({ cat: updatedCat }); // Ensure the response includes 'cat'
     } catch (err) {
-      return next(err);
+      next(err);
     }
   }
 );
@@ -148,8 +146,6 @@ router.post(
         outdoor,
         friendly,
       });
-      console.log(newCatId);
-      // const catId = newCat.id;
 
       // Add the picture to the database
       const picture_id = await Picture.addPicture(newCatId, {

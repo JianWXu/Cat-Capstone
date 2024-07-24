@@ -2,16 +2,6 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "name": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 25
-    },
-    "breed": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 30
-    },
     "age": {
       "type": "integer",
       "minimum": 0
@@ -32,9 +22,7 @@
       "type": "object",
       "properties": {
         "title": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 255
+          "type": "string"
         },
         "description": {
           "type": "string"
@@ -49,7 +37,8 @@
           "type": "string",
           "format": "date-time"
         }
-      }
+      },
+      "required": []
     }
   },
   "additionalProperties": false

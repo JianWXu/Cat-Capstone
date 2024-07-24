@@ -5,7 +5,7 @@ import LandingPageCarousel from './LandingPageCarousel';
 import Footer from '../../../Footer'; // Import Footer component
 import '../../../css/landingpage.css';
 
-function AppLandingPage({ shouldShowLanding }) {
+function AppLandingPage() {
   const cards = [
     [
       { title: 'Jessica and Tinker', text: 'I love this app so much and have been using it a lot. I met so many people and so many great cats!' }, 
@@ -21,7 +21,7 @@ function AppLandingPage({ shouldShowLanding }) {
 
   return (
     <div>
-      {shouldShowLanding && (
+      
         <>
           <div className="first-container">
             <div className="first-container-heading">
@@ -38,7 +38,7 @@ function AppLandingPage({ shouldShowLanding }) {
             <LandingPageCarousel cards={cards} />
           </div>
         </>
-      )}
+      
       
     </div>
   );

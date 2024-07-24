@@ -17,13 +17,28 @@ class CatApi {
     const headers = {
       Authorization: `Bearer ${token.replace(/^"(.*)"$/, "$1")}`,
     };
-    const params = method === "get" ? data : {};
+
+    // Handle parameters and data based on method
+    const config = {
+      method,
+      url,
+      headers,
+    };
+
+    if (method === "get") {
+      config.params = data; // Include parameters in the URL query string for GET requests
+    } else {
+      config.data = data; // Include data in the request body for POST/PATCH/PUT requests
+    }
 
     try {
-      const response = await axios({ url, method, data, params, headers });
+      const response = await axios(config);
       return response.data;
     } catch (err) {
-      console.error("API Error:", err);
+      console.error(
+        "API Error:",
+        err.response ? err.response.data : err.message
+      );
       throw err; // Ensure errors are properly thrown for better debugging
     }
   }
@@ -85,6 +100,16 @@ class CatApi {
     }
   }
 
+  static async getCatDetails(catId) {
+    try {
+      let res = await this.request(`cats/${catId}`);
+      return res.cat;
+    } catch (err) {
+      console.error("Error getting cat", err);
+      throw err;
+    }
+  }
+
   static async addCat(username, formData) {
     try {
       const res = await this.request(
@@ -104,11 +129,30 @@ class CatApi {
     }
   }
 
-  static async patchCat(info) {
+  static async updateCat(catId, username, formData) {
     try {
-      let { username, id, name, breed, age, outdoor, friendly, picture } = info;
-    } catch (err) {
-      throw err;
+      const res = await this.request(
+        `user/${username}/cats/${catId}`,
+        formData,
+        "patch",
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      // Log the entire response to verify structure
+      console.log("API Response:", res);
+
+      if (!res.cat) {
+        throw new Error("Response does not contain 'cat' field");
+      }
+
+      return res.cat;
+    } catch (error) {
+      console.error("Error updating cat:", error);
+      throw error;
     }
   }
 

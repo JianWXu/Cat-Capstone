@@ -127,62 +127,62 @@ class Cat {
     return Object.values(catsWithPictures);
   }
 
-  static async getUserCats(username) {
-    try {
-      // Step 1: Fetch cats data
-      const { data: catsData, error: catsError } = await db
-        .from("cats")
-        .select("*")
-        .eq("username", username);
+  // static async getUserCats(username) {
+  //   try {
+  //     // Step 1: Fetch cats data
+  //     const { data: catsData, error: catsError } = await db
+  //       .from("cats")
+  //       .select("*")
+  //       .eq("username", username);
 
-      if (catsError) {
-        console.error("Error fetching cats:", catsError.message);
-        throw new Error("Failed to fetch cats");
-      }
+  //     if (catsError) {
+  //       console.error("Error fetching cats:", catsError.message);
+  //       throw new Error("Failed to fetch cats");
+  //     }
 
-      // Step 2: Fetch pictures data for each cat
-      const catsWithPictures = await Promise.all(
-        catsData.map(async cat => {
-          try {
-            const { data: picturesData, error: picturesError } = await db
-              .from("pictures")
-              .select("*")
-              .eq("cat_id", cat.id);
+  //     // Step 2: Fetch pictures data for each cat
+  //     const catsWithPictures = await Promise.all(
+  //       catsData.map(async cat => {
+  //         try {
+  //           const { data: picturesData, error: picturesError } = await db
+  //             .from("pictures")
+  //             .select("*")
+  //             .eq("cat_id", cat.id);
 
-            if (picturesError) {
-              console.error(
-                `Error fetching pictures for cat ${cat.id}:`,
-                picturesError.message
-              );
-              throw new Error(`Failed to fetch pictures for cat ${cat.id}`);
-            }
+  //           if (picturesError) {
+  //             console.error(
+  //               `Error fetching pictures for cat ${cat.id}:`,
+  //               picturesError.message
+  //             );
+  //             throw new Error(`Failed to fetch pictures for cat ${cat.id}`);
+  //           }
 
-            return {
-              id: cat.id,
-              name: cat.name,
-              username: cat.username,
-              breed: cat.breed,
-              age: cat.age,
-              outdoor: cat.outdoor,
-              friendly: cat.friendly,
-              pictures: picturesData || [],
-            };
-          } catch (error) {
-            console.error(
-              `Error fetching pictures for cat ${cat.id}:`,
-              error.message
-            );
-            return null; // Handle error or return empty array/object as needed
-          }
-        })
-      );
+  //           return {
+  //             id: cat.id,
+  //             name: cat.name,
+  //             username: cat.username,
+  //             breed: cat.breed,
+  //             age: cat.age,
+  //             outdoor: cat.outdoor,
+  //             friendly: cat.friendly,
+  //             pictures: picturesData || [],
+  //           };
+  //         } catch (error) {
+  //           console.error(
+  //             `Error fetching pictures for cat ${cat.id}:`,
+  //             error.message
+  //           );
+  //           return null; // Handle error or return empty array/object as needed
+  //         }
+  //       })
+  //     );
 
-      return catsWithPictures.filter(cat => cat !== null); // Filter out any null values
-    } catch (error) {
-      console.error("Error fetching user's cats:", error.message);
-      throw new Error("Failed to fetch user's cats");
-    }
-  }
+  //     return catsWithPictures.filter(cat => cat !== null); // Filter out any null values
+  //   } catch (error) {
+  //     console.error("Error fetching user's cats:", error.message);
+  //     throw new Error("Failed to fetch user's cats");
+  //   }
+  // }
 
   static async getUserCats(username) {
     try {
@@ -250,92 +250,86 @@ class Cat {
     }
   }
 
-  static async getRandomCat(username) {
+  static async getCatDetail(catId, username) {
     try {
-      // Get the total number of rows in the cats table
-      const { data: catData, error: catError } = await db
+      let { data, error } = await db
         .from("cats")
-        .select("id", { count: "exact", head: true });
+        .select(
+          `
+        id,
+        name,
+        username,
+        picture_id,
+        breed,
+        age,
+        outdoor,
+        friendly,
+         pictures!fk_picture_id ( 
+            title,
+            description,
+            image_url
+          )
+      `
+        )
+        .eq("id", catId)
+        .eq("username", username)
+        .single();
 
-      if (catError) {
-        console.error(catError);
-        throw new Error("Error fetching total number of cats");
+      if (error) {
+        throw error;
       }
 
-      if (!catData || !catData.count) {
-        throw new Error("No cats found in the database");
+      if (!data || data.username !== username) {
+        throw new UnauthorizedError();
       }
 
-      const totalCats = catData.count;
-      if (totalCats === 0) throw new Error("No cats available");
+      console.log("data from cat model get detail", data);
 
-      // Fetch swiped cat IDs for the user
-      const { data: swipedData, error: swipedError } = await db
-        .from("swipes")
-        .select("cat_id")
-        .eq("username", username);
-
-      if (swipedError) {
-        console.error(swipedError);
-        throw new Error("Error fetching swiped cats");
-      }
-
-      const swipedCatIds = swipedData.map(swipe => swipe.cat_id);
-      let randomCatId;
-
-      // Ensure that there are cats that the user hasn't swiped
-      if (swipedCatIds.length >= totalCats) {
-        throw new Error("No more cats to swipe");
-      }
-
-      // Generate random cat ID and check if it's not in swipedCatIds
-      do {
-        randomCatId = Math.floor(Math.random() * totalCats) + 1;
-      } while (swipedCatIds.includes(randomCatId));
-
-      if (!randomCatId) {
-        throw new Error("Failed to generate a random cat ID");
-      }
-
-      return randomCatId;
-    } catch (err) {
-      console.error("Error in getRandomCat:", err);
-      throw new Error("Error getting random cat");
+      return data;
+    } catch (error) {
+      console.error("Error fetching cat details:", error);
+      throw new Error("Could not fetch cat details");
     }
   }
 
   static async updateCat(catId, data) {
-    const { picture, ...catData } = data;
+    const { picture, imageFile, ...catData } = data;
 
     let pictureId = null;
     if (picture) {
-      // Check if the picture exists
-      const { data: existingPicture, error: pictureCheckError } = await db
-        .from("pictures")
+      // Check if the picture already exists for the given cat
+      const { data: existingCat, error: catError } = await db
+        .from("cats")
         .select("picture_id")
-        .eq("picture_id", picture.picture_id)
+        .eq("id", catId)
         .single();
 
-      if (pictureCheckError && pictureCheckError.code !== "PGRST116") {
-        // Handle error that is not related to "no rows returned"
-        console.error(pictureCheckError);
-        throw new Error("Error checking picture existence");
+      if (catError || !existingCat) {
+        throw new NotFoundError(`No cat with ID ${catId} found`);
       }
 
-      if (!existingPicture) {
+      pictureId = existingCat.picture_id;
+
+      if (pictureId) {
+        // Update existing picture
         try {
-          pictureId = await PictureModel.addPicture(catId, picture);
+          await Picture.updatePicture(pictureId, picture, imageFile);
+        } catch (updatePictureError) {
+          console.error(updatePictureError);
+          throw new Error("Error updating picture");
+        }
+      } else {
+        // Insert new picture
+        try {
+          pictureId = await Picture.addPicture(catId, picture, imageFile);
         } catch (insertPictureError) {
           console.error(insertPictureError);
           throw new Error("Error inserting new picture");
         }
-      } else {
-        // If the picture already exists, use its picture_id
-        pictureId = existingPicture.picture_id;
       }
     }
 
-    // Update cat data including picture_id if available
+    // Update cat data with the picture_id if available
     const updateData = {
       ...catData,
       picture_id: pictureId,
@@ -344,7 +338,7 @@ class Cat {
     const { data: updatedCat, error: updateCatError } = await db
       .from("cats")
       .update(updateData)
-      .eq("id", id)
+      .eq("id", catId)
       .select("id, name, username, picture_id, breed, age, outdoor, friendly")
       .single();
 
@@ -353,7 +347,6 @@ class Cat {
       throw new Error("Error updating cat data");
     }
 
-    // Return the updated cat
     return updatedCat;
   }
 

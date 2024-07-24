@@ -3,7 +3,7 @@
 /** Routes for cats. */
 
 const jsonschema = require("jsonschema");
-const { ensureCorrectUser } = require("../middleware/auth");
+const { ensureCorrectUser, ensureLoggedIn } = require("../middleware/auth");
 const express = require("express");
 const { BadRequestError } = require("../expressError");
 const Cat = require("../models/cat");
@@ -12,6 +12,8 @@ const { createToken } = require("../helpers/tokens");
 const catSearchSchema = require("../schemas/catSearchSchema.json");
 
 const router = express.Router();
+
+// Add body-parser middleware to parse JSON and URL-encoded bodies
 
 /** GET / => { cats: [ {name, user, picture, breed } ] }
  *
@@ -37,9 +39,12 @@ router.get("/", ensureCorrectUser, async function (req, res, next) {
   }
 });
 
-router.get("/:id", ensureCorrectUser, async function (req, res, next) {
+router.get("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
-    const cat = await Cat.get(req.params.id);
+    const username = res.locals.user.username;
+
+    const cat = await Cat.getCatDetail(req.params.id, username);
+    console.log(cat);
     if (!cat) {
       throw new BadRequestError(`No such cat id: ${req.params.id}`);
     }
