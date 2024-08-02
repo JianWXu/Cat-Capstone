@@ -22,9 +22,13 @@ function authenticateJWT(req, res, next) {
       const token = authHeader.replace(/^[Bb]earer /, "").trim();
       console.log("Token:", token);
 
-      const payload = jwt.verify(token, SECRET_KEY);
-      console.log("Payload:", payload);
-      res.locals.user = payload;
+      if (token) {
+        const payload = jwt.verify(token, SECRET_KEY);
+        console.log("Payload:", payload);
+        res.locals.user = payload;
+      } else {
+        console.log("Token is empty.");
+      }
     }
     return next();
   } catch (err) {

@@ -12,8 +12,8 @@ const SwipingMain = () => {
   const fetchRandomCat = async () => {
     try {
       const response = await CatApi.getRandomCat(user.username);
-      setCat(response); // Assuming the response is the cat data
-      setError(null); // Clear previous errors if successful
+      setCat(response);
+      setError(null);
       console.log(response.id)
     } catch (err) {
       console.error('Error fetching random cat:', err);
@@ -28,6 +28,7 @@ const SwipingMain = () => {
       }
       const liked = direction === 'right';
       await CatApi.swipeRandomCat(user.username, cat.id, liked);
+      await fetchRandomCat()
     } catch (err) {
       console.error('Error handling swipe:', err);
     }
@@ -42,7 +43,12 @@ const SwipingMain = () => {
   }
 
   return (
-    <div>
+    <div style={{
+      position: "relative", 
+      overflow: "hidden",
+      width: "50%",
+      margin: "0 auto"
+    }} >
       {cat ? (
         <SwipeCard cat={cat} onSwipe={ handleSwipe } />
       ) : (

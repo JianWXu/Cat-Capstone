@@ -168,4 +168,30 @@ router.post(
   }
 );
 
+router.get(
+  "/:username/likedCats",
+  ensureCorrectUser,
+  async (req, res, next) => {
+    try {
+      const likedCats = await User.getLikedCats(req.params.username);
+      return res.json({ likedCats });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+router.get(
+  "/user/:username/checkMutualLike",
+  ensureCorrectUser,
+  async (req, res, next) => {
+    try {
+      const res = await User.checkMutualLikes(req.params.username);
+      return res.json(mutualLikes)
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
 module.exports = router;

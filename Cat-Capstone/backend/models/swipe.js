@@ -13,8 +13,7 @@ class Swipe {
       );
       const { data, error } = await db
         .from("swipes")
-        .insert([{ username, cat_id, liked }])
-        .single();
+        .insert([{ username, cat_id, liked }]);
 
       console.log("Database Response:", { data, error }); // Log the full response
 
@@ -23,11 +22,7 @@ class Swipe {
         throw new Error(`Error adding swipe: ${error.message}`);
       }
 
-      if (!data) {
-        throw new Error("No data returned from the database");
-      }
-
-      return data;
+      return;
     } catch (err) {
       console.error("Error in addSwipe method:", err);
       throw err;

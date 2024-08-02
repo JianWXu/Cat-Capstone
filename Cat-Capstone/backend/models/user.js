@@ -49,7 +49,7 @@ class User {
     if (userError) {
       throw new NotFoundError("User not found");
     }
-    console.log(userData);
+
     const { username, first_name, last_name } = userData[0];
 
     if (username && username.length === 0) {
@@ -205,6 +205,107 @@ class User {
     // Omit the password field before returning the user
     delete user.password;
     return user;
+  }
+
+  static async getLikedCats(username) {
+    // Step 1: Query swipes table to get cat_ids of liked cats
+    const { data: likedSwipes, error: likedSwipesError } = await db
+      .from("swipes")
+      .select("cat_id")
+      .eq("username", username)
+      .eq("liked", true);
+
+    if (likedSwipesError) {
+      throw new NotFoundError("No liked cats found for user.");
+    }
+
+    if (likedSwipes.length === 0) {
+      return [];
+    }
+
+    const likedCatIds = likedSwipes.map(swipe => swipe.cat_id);
+
+    // Step 2: Query cats table to get data of liked cats
+    const { data: likedCats, error: likedCatsError } = await db
+      .from("cats")
+      .select("*")
+      .in("id", likedCatIds);
+
+    if (likedCatsError) {
+      throw new NotFoundError("Error retrieving liked cats data.");
+    }
+
+    // Fetch emails of cat owners
+    const userEmails = await Promise.all(
+      likedCats.map(async cat => {
+        const { data: user, error: userError } = await db
+          .from("users")
+          .select("email")
+          .eq("username", cat.username) // Ensure this is the correct field
+          .single();
+
+        if (userError) {
+          throw new Error(
+            `Error fetching email for user ${cat.username}: ${userError.message}`
+          );
+        }
+
+        return { catId: cat.id, email: user.email };
+      })
+    );
+
+    // Step 3: Query pictures table to get pictures for liked cats
+    const pictureIds = likedCats.map(cat => cat.picture_id);
+    const { data: pictures, error: picturesError } = await db
+      .from("pictures")
+      .select("picture_id, image_url")
+      .in("picture_id", pictureIds);
+
+    if (picturesError) {
+      throw new NotFoundError("Error retrieving pictures for liked cats.");
+    }
+
+    // Step 4: Combine cat data with pictures and emails
+    const catData = likedCats.map(cat => {
+      const picture = pictures.find(pic => pic.picture_id === cat.picture_id);
+      const userEmail =
+        userEmails.find(user => user.catId === cat.id)?.email || null;
+      return {
+        ...cat,
+        image_url: picture ? picture.image_url : null,
+        ownerEmail: userEmail,
+      };
+    });
+
+    return catData;
+  }
+
+  static async checkMutualLikes(username) {
+    try {
+      // Step 1: Get the list of cats liked by the current user
+      const likedCats = await this.getLikedCats(username);
+
+      // Extract usernames of users who own these liked cats
+      const ownerUsernames = [...new Set(likedCats.map(cat => cat.username))];
+
+      // Step 2: Fetch all cats owned by these users
+      const userCatsPromises = ownerUsernames.map(user => this.get(user));
+      const userCatsResults = await Promise.all(userCatsPromises);
+
+      // Flatten the list of cats from all users
+      const allUserCats = userCatsResults.flatMap(user => user.cats);
+
+      // Extract cat IDs owned by these users
+      const userCatIds = new Set(allUserCats);
+
+      // Check if any of the liked cats are also owned by these users
+      const mutualLikes = likedCats.some(cat => userCatIds.has(cat.id));
+
+      return mutualLikes;
+    } catch (error) {
+      console.error("Error checking mutual likes:", error);
+      throw new Error("Error checking mutual likes");
+    }
   }
 
   static async logout() {

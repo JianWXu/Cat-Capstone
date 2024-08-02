@@ -1,0 +1,24 @@
+.cats-liked-carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.carousel-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slick-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slick-slide img {
+  border-radius: 50%;
+  margin: auto;
+  width: 150px;
+  height: 150px;
+}

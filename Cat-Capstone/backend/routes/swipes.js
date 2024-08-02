@@ -40,9 +40,8 @@ router.post("/", async function (req, res, next) {
     ); // Log the received cat_id
     const swipeRes = await Swipe.addSwipe(username, cat_id, liked);
 
-    if (!swipeRes) throw new Error("Error inserting swipe");
     console.log("router post response is", swipeRes);
-    return res.status(201).json({ swipe: swipeRes });
+    return res.status(201).json({ success: true });
   } catch (err) {
     return next(err);
   }

@@ -57,6 +57,7 @@ class CatApi {
     let { email, password } = data;
     try {
       let res = await this.request(`auth/login`, { email, password }, "post");
+      console.log("api verify user sign in token", res.token);
       return res.token;
     } catch (err) {
       console.error("Error logging in:", err);
@@ -168,10 +169,6 @@ class CatApi {
 
   static async swipeRandomCat(username, catId, liked) {
     try {
-      console.log(
-        `API Call: swipe {username: '${username}', cat_id: ${catId}, liked: ${liked}} post`
-      ); // Add a log statement
-
       let res = await this.request(
         `swipe`,
         { username, cat_id: catId, liked },
@@ -180,6 +177,32 @@ class CatApi {
       return res;
     } catch (err) {
       console.error("Swipe Error:", err);
+      throw err;
+    }
+  }
+
+  static async getLikedCats(username) {
+    try {
+      let res = await this.request(`user/${username}/likedCats`, {}, "get");
+      console.log(res.likedCats);
+      return res.likedCats;
+    } catch (err) {
+      console.error("Error getting liked cats", err);
+      throw err;
+    }
+  }
+
+  static async getMutualLike(username) {
+    try {
+      let res = await this.request(
+        `user/${username}/checkMutualLike`,
+        {},
+        "get"
+      );
+      console.log(res);
+      return res;
+    } catch (err) {
+      console.error("Error checking mutual likes", err);
       throw err;
     }
   }

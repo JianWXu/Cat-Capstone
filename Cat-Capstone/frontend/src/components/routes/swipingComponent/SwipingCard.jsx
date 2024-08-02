@@ -2,7 +2,7 @@ import React from 'react';
 import TinderCard from 'react-tinder-card';
 import './swiping.css';
 
-const SwipeCard = ({ cat, onSwipe, }) => {
+const SwipeCard = ({ cat, onSwipe }) => {
   const handleSwipe = (dir) => {
     console.log(`Swiped ${dir} on cat with ID ${cat.id}`);
     if (dir === 'left' || dir === 'right') {
@@ -11,9 +11,12 @@ const SwipeCard = ({ cat, onSwipe, }) => {
   };
 
   return (
+    
     <TinderCard
+
       key={cat.id}
       onSwipe={handleSwipe}
+      swipeRequirementType={"position"}
       preventSwipe={['up', 'down']} // Prevent swipe up/down, only left/right are valid
       swipeThreshold={0.2} // Adjust swipe threshold to make swiping more sensitive
     >

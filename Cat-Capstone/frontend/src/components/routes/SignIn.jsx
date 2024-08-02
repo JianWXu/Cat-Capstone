@@ -21,22 +21,18 @@ function AppLogin({ authLoginInfo }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await authLoginInfo(formData);
-      if (response.token) {
-        localStorage.setItem('token', response.token); // Store the token
-        navigate("/");
-        console.log("Login successful. Navigating to '/'...");
-      } else {
-        setErrorMessage("No token received.");
-        console.log("Login unsuccessful.");
-      }
+    try {     
+        const res = await authLoginInfo(formData);
+        if(res){
+          navigate("/");
+          console.log("Login successful. Navigating to '/'...");    
+        }          
     } catch (err) {
       console.error("Error logging in", err);
       setErrorMessage("Incorrect email or password.");
       console.log("Login unsuccessful.");
-    }
-  };
+  }
+}
 
   return (
     <div className="signInFormDiv">

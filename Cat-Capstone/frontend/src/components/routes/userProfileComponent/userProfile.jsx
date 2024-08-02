@@ -103,6 +103,8 @@ function AppProfile() {
             <button type="submit">Submit</button>
           </form>
           <button onClick={() => navigate('/userCats')}>Edit Cats</button>
+          <br></br>
+          <button onClick={() => navigate('/user/likedCats')}>Liked Cats</button>
         </div>
       
     </div>

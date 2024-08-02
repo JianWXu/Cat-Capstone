@@ -9,6 +9,7 @@ import AppProfile from './userProfileComponent/userProfile';
 import AppAddCat from './userCatComponent/addCat';
 import AppUserCats from './userCatComponent/userCats';
 import AppUpdateCat from './userCatComponent/updateCat';
+import AppCatsLiked from './catsLikedComponent/CatsLikedPage'
 import PrivateRoute from '../../PrivateRoute';
 
 function AppRoutes({ signUp, authLoginInfo }) {
@@ -23,6 +24,7 @@ function AppRoutes({ signUp, authLoginInfo }) {
       <Route path="/profile" element={<PrivateRoute><AppProfile /></PrivateRoute>} />
       <Route path="/addCat" element={<PrivateRoute><AppAddCat /></PrivateRoute>} />
       <Route path="/userCats" element={<PrivateRoute><AppUserCats /></PrivateRoute>} />
+      <Route path="/user/likedCats" element={<PrivateRoute><AppCatsLiked /></PrivateRoute>}/>
       <Route path="/cats/:catId/update" element={<AppUpdateCat />} />
       <Route path="*" element={<Navigate to="/home" />} />
     </Routes>

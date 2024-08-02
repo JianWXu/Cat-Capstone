@@ -2,7 +2,6 @@
 import React from 'react';
 import CatPileLady from '../../../assets/catpile-woman.png';
 import LandingPageCarousel from './LandingPageCarousel';
-import Footer from '../../../Footer'; // Import Footer component
 import '../../../css/landingpage.css';
 
 function AppLandingPage() {

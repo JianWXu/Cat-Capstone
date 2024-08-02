@@ -47,20 +47,30 @@ function App() {
   const authLoginInfo = async (data) => {
     try {
       const res = await CatApi.verifyUserSignIn(data);
+      console.log("API Response:", res);
+  
       if (res) {
-        const token = res.replace(/\"/g, "");
+        const token = res;
+        console.log("Token:", token);
+  
         localStorage.setItem('userToken', token);
         setUserToken(token);
-
+  
         const payload = JSON.parse(atob(token.split('.')[1]));
         const fetchedUsername = payload.username;
         setUsername(fetchedUsername);
-
+         
         const headers = { Authorization: `Bearer ${token}` };
+
         const userData = await CatApi.getUser(fetchedUsername, { headers });
         if (userData && userData.user) {
           setUser(userData.user);
+          return true;
+        }  else {
+          throw new Error("User data not found");
         }
+      } else {
+        console.error("Token not found in response");
       }
     } catch (error) {
       console.error("Error logging in:", error);
@@ -91,7 +101,6 @@ function App() {
     <UserContext.Provider value={{ user, userToken, signOut }}>      
       <AppNavBar signOut={signOut} />
       <AppRoutes signUp={signUp} authLoginInfo={authLoginInfo}/>
-      {/* <AppRoutes authLoginInfo={authLoginInfo} /> */}
       <Footer />
     </UserContext.Provider>
   );
