@@ -1,8 +1,8 @@
 import axios from "axios";
 
-// const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
 
-let BASE_URL = "http://localhost:3001";
+// let BASE_URL = "http://localhost:3001";
 
 class CatApi {
   static get token() {

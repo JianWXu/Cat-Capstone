@@ -39,7 +39,7 @@ function AppUserCats() {
                                 </Link>
                                 <p>Breed: {cat.breed}</p>
                                 <p>Age: {cat.age}</p>
-                                <p>Description: {cat.pictures[0].description}</p>
+                                <p>Description: {cat.description}</p>
                             </li>
                         ))
                     ) : (
