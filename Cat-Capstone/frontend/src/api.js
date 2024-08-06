@@ -1,8 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
-
-// let BASE_URL = "http://localhost:3001";
+const VITE_BASE_URL =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
 class CatApi {
   static get token() {
@@ -12,8 +11,8 @@ class CatApi {
   static async request(endpoint, data = {}, method = "get") {
     console.debug("API Call:", endpoint, data, method);
 
-    const url = `${BASE_URL}/${endpoint}`;
-    const token = CatApi.token || ""; // Default to empty string if token is null or undefined
+    const url = `${VITE_BASE_URL}/${endpoint}`;
+    const token = CatApi.token || "";
     const headers = {
       Authorization: `Bearer ${token.replace(/^"(.*)"$/, "$1")}`,
     };
