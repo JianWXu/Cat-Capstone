@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import UserContext from "../../../UserContext";
 import { useNavigate } from "react-router-dom";
-import CatApi from '../../../../../api';
+import CatApi from '../../../api';
 import './userProfile.css';
 
 function AppProfile() {

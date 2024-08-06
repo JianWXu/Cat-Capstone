@@ -1,7 +1,7 @@
 import UserContext from "../../../UserContext";
 import React, { useEffect, useState, useContext } from 'react';
 import CatsLikedCarousel from './CatsLikedCarousel';
-import CatApi from '../../../../../api';
+import CatApi from '../../../api';
 import "./catsLikedPage.css"
 
 function AppCatsLikedPage() {

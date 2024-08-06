@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import useLocalStorage from './useLocalStorage';
 import { useNavigate } from "react-router-dom";
-import CatApi from '../../api';
+import CatApi from './api';
 import AppLandingPage from './components/routes/landingPageComponents/LandingPage';
 import AppNavBar from './components/routes/navbarComponents/NavBar';
 import AppRoutes from "./components/routes/Routes";

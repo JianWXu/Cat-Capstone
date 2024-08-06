@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import UserContext from '../../../UserContext';
-import CatApi from '../../../../../api';
+import CatApi from '../../../api';
 import './addCat.css';
 
 function AppAddCat() {
