@@ -18,45 +18,48 @@
   font-weight: lighter;
   background-color: rgba(168, 161, 115, 0.1);
   color: #4c5059;
+  border: 1px solid rgba(168, 161, 115, 0.2);
 }
 
-.usernameLabel {
-  vertical-align: baseline;
-  font-size: small;
+.signUpFormDiv h1 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  text-align: center;
 }
 
-.passwordLabel {
-  vertical-align: baseline;
-  font-size: small;
+.signUpFormDiv label {
+  font-size: smaller;
+  display: block;
+  margin: 10px auto;
 }
 
-.firstNameLabel {
-  vertical-align: baseline;
-  font-size: small;
+.signUpFormDiv input,
+.signUpFormDiv textarea {
+  width: 70%;
+  padding: 10px;
+  border: 1px solid rgba(168, 161, 115, 0.2);
+  border-radius: 5px;
+  margin-bottom: 10px;
+  font-size: 16px;
 }
 
-.lastNameLabel {
-  vertical-align: baseline;
-  font-size: small;
-}
-
-.emailLabel {
-  vertical-align: baseline;
-  font-size: small;
-}
-
-.signupSubmitButton {
-  /* margin: 15px auto 1px; */
+.signUpFormDiv button {
   font-weight: bolder;
-  padding: 5px;
-  border: 1px solid rgba(168, 161, 115, 255);
-  border-radius: 3px;
+  padding: 10px;
+  border: 1px solid rgba(168, 161, 115, 0.5);
+  border-radius: 5px;
   margin: 20px auto 5px auto;
   background-color: rgba(168, 161, 115, 0.5);
+  color: #4c5059;
+  cursor: pointer;
 }
 
-/* Style the placeholder text */
-input::placeholder {
+.signUpFormDiv button:hover {
+  background-color: rgba(168, 161, 115, 0.7);
+}
+
+input::placeholder,
+textarea::placeholder {
   font-size: 12px;
   color: #888;
   padding-left: 3px;

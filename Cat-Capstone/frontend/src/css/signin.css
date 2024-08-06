@@ -1,32 +1,68 @@
+/* signin.css */
+
 .signInFormDiv {
-  border: 1px solid rgba(168, 161, 115, 255);
-  padding: 20px; /* Optional: Adds some padding inside the border */
-  border-radius: 5px; /* Optional: Adds rounded corners */
-  width: fit-content; /* Optional: Adjusts width to fit content */
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-radius: 5px;
   margin: auto;
   font-weight: lighter;
-  background-color: rgba(168, 161, 115, 0.2);
+  background-color: rgba(168, 161, 115, 0.1);
+  color: #4c5059;
+  max-width: 400px; /* Adjust as needed */
+  border: 1px solid rgba(168, 161, 115, 0.2);
 }
 
-.emailLabel {
-  vertical-align: baseline;
-  font-size: small;
+.signInFormDiv h6 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  text-align: center;
 }
 
-.signinSubmitButton {
-  /* margin: 15px auto 1px; */
+.signInFormDiv label {
+  font-size: smaller;
+  display: block;
+  margin: 10px auto;
+}
+
+.signInFormDiv input {
+  width: calc(100% - 20px); /* Adjust width to fit padding */
+  padding: 10px;
+  border: 1px solid rgba(168, 161, 115, 0.2);
+  border-radius: 5px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.signInFormDiv button {
   font-weight: bolder;
-  padding: 5px;
-  border: 1px solid rgba(168, 161, 115, 255);
-  border-radius: 3px;
+  padding: 10px;
+  border: 1px solid rgba(168, 161, 115, 0.5);
+  border-radius: 5px;
   margin: 20px auto 5px auto;
   background-color: rgba(168, 161, 115, 0.5);
+  color: #4c5059;
+  cursor: pointer;
+}
+
+.signInFormDiv button:hover {
+  background-color: rgba(168, 161, 115, 0.7);
 }
 
 /* Style the placeholder text */
 input::placeholder {
-  font-size: 12px; /* Adjust the font size as needed */
-  color: #888; /* Optional: Change the color of the placeholder text */
+  font-size: 12px;
+  color: #888;
   padding-left: 3px;
   padding-top: 0px;
+}
+
+.error-message {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  text-align: center;
 }

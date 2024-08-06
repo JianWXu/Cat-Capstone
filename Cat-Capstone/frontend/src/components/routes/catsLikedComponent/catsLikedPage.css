@@ -1,0 +1,28 @@
+/* AppCatsLikedPage.css */
+
+/* Container for the entire page */
+.app-cats-liked-page {
+  max-width: 90%;
+  margin: 20px auto;
+  padding: 30px 10px 80px 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Page title styling */
+.app-cats-liked-page h1 {
+  font-size: 2rem;
+  font-weight: lighter;
+  color: #4c5059; /* Consistent with other titles */
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Loading and no cats message */
+.app-cats-liked-page p {
+  font-size: 1rem;
+  color: #4c5059;
+  text-align: center;
+}

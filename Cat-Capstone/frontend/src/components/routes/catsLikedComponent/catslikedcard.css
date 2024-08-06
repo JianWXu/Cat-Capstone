@@ -4,28 +4,47 @@
 
 .cats-liked-card-body {
   text-align: center;
+  margin-bottom: 30px;
 }
 
 .cats-liked-card-title {
   font-size: 1.25rem;
+  font-weight: lighter;
+  color: #4c5059; /* Consistent with other form titles */
 }
 
 .email-button {
   margin-top: 1rem;
-  padding: 0.5rem 1rem;
+  padding: 10px 20px;
   border: none;
-  border-radius: 0.25rem;
-  background-color: #007bff;
-  color: #fff;
+  border-radius: 5px;
+  background-color: rgba(
+    168,
+    161,
+    115,
+    0.5
+  ); /* Consistent with other buttons */
+  color: #4c5059; /* Consistent with other button text colors */
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 16px;
+  font-weight: bolder;
 }
 
 .email-button:hover {
-  background-color: #0056b3;
+  background-color: rgba(
+    168,
+    161,
+    115,
+    0.7
+  ); /* Consistent with other button hover effects */
 }
 
 .error-message {
-  color: #dc3545;
+  color: #721c24; /* Consistent with other error messages */
+  background-color: #f8d7da; /* Consistent with other error message backgrounds */
+  border: 1px solid #f5c6cb; /* Consistent with other error message borders */
+  padding: 10px;
+  border-radius: 5px;
   margin-top: 0.5rem;
+  text-align: center;
 }

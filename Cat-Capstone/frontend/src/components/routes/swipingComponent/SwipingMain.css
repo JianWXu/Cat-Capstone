@@ -1,0 +1,41 @@
+/* SwipeCard styling */
+.swipe-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90%; /* Increase width to make the card more prominent */
+  max-width: 400px; /* Restrict maximum width for better mobile appearance */
+  height: 70vh; /* Adjust height for better card proportion */
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.swipe-card img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 15px;
+}
+
+/* SwipingMain container styling */
+.swiping-main-container {
+  position: relative;
+  width: 70%; 
+  max-width: 500px; /* Restrict maximum width */
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Title styling */
+.swiping-main-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}

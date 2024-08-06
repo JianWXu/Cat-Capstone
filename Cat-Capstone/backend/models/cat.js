@@ -132,7 +132,7 @@ class Cat {
       // Get all cat IDs
       const { data: allCatsData, error: allCatsError } = await db
         .from("cats")
-        .select("id");
+        .select("id, username");
 
       if (allCatsError) {
         throw new Error("Error fetching all cat IDs");
@@ -156,13 +156,18 @@ class Cat {
 
       const swipedCatIds = swipedData.map(swipe => swipe.cat_id);
 
-      // Filter out the swiped cat IDs
+      // Fetch cat IDs owned by the user
+      const userCatIds = allCatsData
+        .filter(cat => cat.username === username)
+        .map(cat => cat.id);
+
+      // Filter out the swiped cat IDs and the user's own cat IDs
       const availableCatIds = allCatIds.filter(
-        id => !swipedCatIds.includes(id)
+        id => !swipedCatIds.includes(id) && !userCatIds.includes(id)
       );
 
       if (availableCatIds.length === 0) {
-        throw new Error("No more cats to swipe");
+        return { message: "No more cats to swipe" }; // Return a message indicating no more cats to swipe
       }
 
       // Select a random cat ID from the available ones

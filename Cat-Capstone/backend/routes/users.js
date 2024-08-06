@@ -182,12 +182,12 @@ router.get(
 );
 
 router.get(
-  "/user/:username/checkMutualLike",
+  "/:username/checkMutualLike",
   ensureCorrectUser,
   async (req, res, next) => {
     try {
-      const res = await User.checkMutualLikes(req.params.username);
-      return res.json(mutualLikes)
+      const result = await User.checkMutualLikes(req.params.username);
+      return res.json(result);
     } catch (err) {
       return next(err);
     }

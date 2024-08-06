@@ -40,11 +40,6 @@ function CatsLikedCard({ name, image, species, friendly, age, outdoor, ownerEmai
 
 CatsLikedCard.propTypes = {
   name: PropTypes.string.isRequired,
-  image: PropTypes.string.isRequired,
-  species: PropTypes.string.isRequired,
-  friendly: PropTypes.bool.isRequired,
-  age: PropTypes.number.isRequired,
-  outdoor: PropTypes.bool.isRequired,
 };
 
 export default CatsLikedCard;

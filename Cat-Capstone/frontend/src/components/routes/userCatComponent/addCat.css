@@ -1,3 +1,56 @@
+/* Add Cat container styling */
+.add-cat-container {
+  max-width: 400px; /* Match with sign-in form width */
+  margin: 20px auto; /* Ensure consistent margin */
+  padding: 20px;
+  border: 1px solid rgba(168, 161, 115, 0.2);
+  border-radius: 5px;
+  background-color: rgba(168, 161, 115, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Add Cat form styling */
+.add-cat-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.add-cat-form label {
+  font-size: smaller; /* Match sign-in form label size */
+  display: block;
+  margin: 10px 0;
+}
+
+.add-cat-form input,
+.add-cat-form textarea {
+  width: calc(100% - 20px); /* Adjust width to fit padding */
+  padding: 10px;
+  border: 1px solid rgba(168, 161, 115, 0.2);
+  border-radius: 5px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.add-cat-form button {
+  font-weight: bolder;
+  padding: 10px;
+  border: 1px solid rgba(168, 161, 115, 0.5);
+  border-radius: 5px;
+  margin-top: 10px;
+  background-color: rgba(168, 161, 115, 0.5);
+  color: #4c5059;
+  cursor: pointer;
+  font-size: 16px;
+  width: 30%;
+  align-self: center;
+}
+
+.add-cat-form button:hover {
+  background-color: rgba(168, 161, 115, 0.7);
+}
+
+/* Flash message styling (in case it's used in add-cat form as well) */
 .flash-message {
   padding: 1rem;
   margin-bottom: 1rem;
@@ -17,38 +70,11 @@
   border: 1px solid #f5c6cb;
 }
 
-.add-cat-container {
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  max-width: 600px;
-  margin: auto;
-}
-
-.add-cat-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.add-cat-form label {
-  margin-top: 1rem;
-}
-
-.add-cat-form input,
-.add-cat-form textarea {
-  margin-top: 0.5rem;
-}
-
-.add-cat-form button {
-  margin-top: 1rem;
-  padding: 0.5rem;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.add-cat-form button:hover {
-  background-color: #0056b3;
+/* Style the placeholder text */
+input::placeholder,
+textarea::placeholder {
+  font-size: 12px;
+  color: #888;
+  padding-left: 3px;
+  padding-top: 0px;
 }

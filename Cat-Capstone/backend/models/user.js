@@ -284,14 +284,14 @@ class User {
     try {
       // Step 1: Get the list of cats liked by the current user
       const likedCats = await this.getLikedCats(username);
-
+      console.log("likedCats", likedCats);
       // Extract usernames of users who own these liked cats
       const ownerUsernames = [...new Set(likedCats.map(cat => cat.username))];
 
       // Step 2: Fetch all cats owned by these users
       const userCatsPromises = ownerUsernames.map(user => this.get(user));
       const userCatsResults = await Promise.all(userCatsPromises);
-
+      
       // Flatten the list of cats from all users
       const allUserCats = userCatsResults.flatMap(user => user.cats);
 
@@ -300,7 +300,7 @@ class User {
 
       // Check if any of the liked cats are also owned by these users
       const mutualLikes = likedCats.some(cat => userCatIds.has(cat.id));
-
+      console.log("check mutual likes user model", mutualLikes);
       return mutualLikes;
     } catch (error) {
       console.error("Error checking mutual likes:", error);

@@ -41,10 +41,10 @@ function AppSignUp({ signUp }) {
         <img src={CatYogaImage} alt="yoga cats" />
       </div>
       <div className="signUpFormDiv">
-        <h6>Join Whiskurr today</h6>
+        <h1>Join Whiskurr today</h1>
         <form onSubmit={handleSubmit}>
           <label htmlFor="username" className="usernameLabel">Username: </label>
-          <br/>
+          
           <input
             id="username"
             type="text"
@@ -55,7 +55,7 @@ function AppSignUp({ signUp }) {
           />
           <br/>
           <label htmlFor="password" className="passwordLabel">Password: </label>
-          <br/>
+          
           <input
             id="password"
             type="password"
@@ -66,7 +66,7 @@ function AppSignUp({ signUp }) {
           />
           <br/>
           <label htmlFor="first_name" className="firstNameLabel">First Name: </label>
-          <br/>
+          
           <input
             id="first_name"
             type="text"
@@ -77,7 +77,7 @@ function AppSignUp({ signUp }) {
           />
           <br/>
           <label htmlFor="last_name" className="lastNameLabel">Last Name: </label>
-          <br/>
+          
           <input
             id="last_name"
             type="text"
@@ -88,7 +88,7 @@ function AppSignUp({ signUp }) {
           />
           <br/>
           <label htmlFor="email" className="emailLabel">Email: </label>
-          <br/>
+          
           <input
             id="email"
             type="text"

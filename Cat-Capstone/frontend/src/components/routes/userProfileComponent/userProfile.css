@@ -1,5 +1,4 @@
-/* profilePatch.css */
-
+/* Flash message styling */
 .flash-message {
   padding: 1rem;
   margin-bottom: 1rem;
@@ -21,56 +20,93 @@
 
 /* Container styling */
 .profile-container {
-  max-width: 500px;
-  margin: 0 auto;
+  max-width: 400px; /* Match the width with sign-in and sign-up forms */
+  margin: auto;
   padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+  border: 1px solid rgba(168, 161, 115, 0.2);
+  border-radius: 5px;
+  background-color: rgba(168, 161, 115, 0.1);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Form styling */
 .profile-form {
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .profile-form label {
+  font-size: smaller; /* Match label size */
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   font-weight: bold;
 }
 
 .profile-form input[type="text"],
 .profile-form input[type="password"] {
-  width: 100%;
-  padding: 8px;
+  width: calc(100% - 20px); /* Adjust width to fit padding */
+  padding: 10px;
   margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
+  border: 1px solid rgba(168, 161, 115, 0.2);
+  border-radius: 5px;
   font-size: 16px;
+  box-sizing: border-box;
+}
+
+.profile-form button,
+.edit-button,
+.liked-button {
+  font-weight: bolder;
+  padding: 10px;
+  border: 1px solid rgba(168, 161, 115, 0.5);
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  width: 30%; /* Match button width */
+  align-self: center;
 }
 
 .profile-form button {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
+  margin-top: 10px;
+  background-color: rgba(168, 161, 115, 0.5);
+  color: #4c5059;
 }
 
 .profile-form button:hover {
-  background-color: #0056b3;
+  background-color: rgba(168, 161, 115, 0.7);
+}
+
+.edit-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.edit-button:hover {
+  background-color: #218838;
+}
+
+.liked-button {
+  background-color: #ff9800;
+  color: white;
+}
+
+.liked-button:hover {
+  background-color: #e68900;
+}
+
+/* Horizontal rule styling */
+.hr {
+  width: 30%;
+  margin: 20px auto;
+  border: 1px solid #ccc;
 }
 
 /* Message styling */
 .message {
   margin-top: 10px;
   padding: 10px;
-  border-radius: 4px;
+  border-radius: 5px;
+  text-align: center;
 }
 
 .message.success {
