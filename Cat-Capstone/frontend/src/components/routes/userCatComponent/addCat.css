@@ -1,7 +1,7 @@
 /* Add Cat container styling */
 .add-cat-container {
   max-width: 400px; /* Match with sign-in form width */
-  margin: 20px auto; /* Ensure consistent margin */
+  margin: 3.7rem auto auto; /* Create space above the form */
   padding: 20px;
   border: 1px solid rgba(168, 161, 115, 0.2);
   border-radius: 5px;
@@ -50,12 +50,20 @@
   background-color: rgba(168, 161, 115, 0.7);
 }
 
-/* Flash message styling (in case it's used in add-cat form as well) */
+/* Flash message styling */
 .flash-message {
   padding: 1rem;
   margin-bottom: 1rem;
   text-align: center;
   border-radius: 5px;
+  width: 100%; /* Ensure the message spans the full width */
+  display: flex;
+  justify-content: center;
+  position: absolute; /* Position the message absolutely */
+  top: 3.8rem; /* Place the message 2rem from the top */
+  left: 50%;
+  transform: translateX(-50%); /* Center the message horizontally */
+  z-index: 1000; /* Ensure the message is above other content */
 }
 
 .flash-message.success {

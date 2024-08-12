@@ -37,6 +37,20 @@ function AppAddCat() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+     // Simple validation checks
+  if (!formData.name.trim() || !formData.breed.trim() || !formData.age || !formData.title.trim() || !formData.description.trim() || !image) {
+    setMessage("Please fill out all fields and upload a picture.");
+    setMessageType("error");
+    return;
+  }
+
+
+  if (formData.age <= 0) {
+    setMessage("Age must be a positive number.");
+    setMessageType("error");
+    return;
+  }
+
     const form = new FormData();
     form.append("name", formData.name);
     form.append("breed", formData.breed);

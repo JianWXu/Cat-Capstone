@@ -1,9 +1,18 @@
 /* Flash message styling */
 .flash-message {
+  align-items: center;
   padding: 1rem;
   margin-bottom: 1rem;
   text-align: center;
   border-radius: 5px;
+  width: 100%; /* Ensure the message spans the full width */
+  display: flex;
+  justify-content: center;
+  position: absolute; /* Position the message absolutely */
+  top: 3.8rem; /* Place the message 2rem from the top */
+  left: 50%;
+  transform: translateX(-50%); /* Center the message horizontally */
+  z-index: 1000; /* Ensure the message is above other content */
 }
 
 .flash-message.success {
@@ -21,7 +30,7 @@
 /* Container styling */
 .profile-container {
   max-width: 400px; /* Match the width with sign-in and sign-up forms */
-  margin: auto;
+  margin: 3.7rem auto auto; /* Create space above the form */
   padding: 20px;
   border: 1px solid rgba(168, 161, 115, 0.2);
   border-radius: 5px;
@@ -102,7 +111,13 @@
 }
 
 /* Message styling */
+.error-container {
+  margin: auto;
+  align-self: center;
+}
+
 .message {
+  align-self: center;
   margin-top: 10px;
   padding: 10px;
   border-radius: 5px;

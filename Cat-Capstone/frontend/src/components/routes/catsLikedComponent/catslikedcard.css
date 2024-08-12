@@ -40,6 +40,7 @@
 }
 
 .error-message {
+  align-self: center;
   color: #721c24; /* Consistent with other error messages */
   background-color: #f8d7da; /* Consistent with other error message backgrounds */
   border: 1px solid #f5c6cb; /* Consistent with other error message borders */

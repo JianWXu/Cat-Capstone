@@ -21,18 +21,21 @@ function AppLogin({ authLoginInfo }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {     
-        const res = await authLoginInfo(formData);
-        if(res){
-          navigate("/");
-          console.log("Login successful. Navigating to '/'...");    
-        }          
+    try {
+      const res = await authLoginInfo(formData);
+      if (res) {
+        navigate("/");
+        console.log("Login successful. Navigating to '/'...");
+      } else {
+        throw new Error("Login failed");
+      }
     } catch (err) {
       console.error("Error logging in", err);
       setErrorMessage("Incorrect email or password.");
       console.log("Login unsuccessful.");
-  }
-}
+    }
+  };
+  
 
   return (
     <div className="signInFormDiv">

@@ -63,7 +63,7 @@ function AppProfile() {
   }
 
   return (
-    <div>
+    <div className="error-container">
       {message && (
         <div className={`flash-message ${messageType}`}>
           {message}

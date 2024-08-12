@@ -245,6 +245,7 @@ class Cat {
               picture_id: picture.picture_id,
               cat_id: picture.cat_id,
               title: picture.title,
+              description: picture.description,
               image_url: picture.image_url,
               upload_date: picture.upload_date,
             }));
