@@ -6,7 +6,7 @@ import AppLandingPage from './components/routes/landingPageComponents/LandingPag
 import AppNavBar from './components/routes/navbarComponents/NavBar';
 import AppRoutes from "./components/routes/Routes";
 import Footer from './Footer';
-import UserContext from './UserContextTEMP';
+import UserContext from './UserContext';
 import './App.css';
 
 function App() {

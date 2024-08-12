@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Nav, Container, Navbar } from 'react-bootstrap';
-import UserContext from "../../../UserContextTEMP";
+import UserContext from "../../../UserContext";
 import { LinkContainer } from 'react-router-bootstrap';
 import whiskurrLogo from '../../../assets/Editted_Cat.png';
 import './navbar.css';

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import UserContext from '../../UserContextTEMP';
+import UserContext from '../../UserContext';
 import AppLandingPage from './landingPageComponents/LandingPage';
 import AppSignUp from './SignUp';
 import AppLogin from './SignIn';

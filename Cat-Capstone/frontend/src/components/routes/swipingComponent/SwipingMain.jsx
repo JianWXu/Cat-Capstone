@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import UserContext from '../../../UserContextTEMP';
+import UserContext from '../../../UserContext';
 import CatApi from '../../../api';
 import SwipeCard from './SwipingCard';
 import './SwipingMain.css'; // Ensure to import the CSS file
