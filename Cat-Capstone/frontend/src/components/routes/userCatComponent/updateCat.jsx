@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import UserContext from '../../../UserContext';
+import UserContext from '../../../UserContextTEMP';
 import CatApi from '../../../api';
 import './updateCat.css';
 

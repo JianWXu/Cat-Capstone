@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import UserContext from '../../../UserContext';
+import UserContext from '../../../UserContextTEMP';
 import CatApi from '../../../api';
 import './addCat.css';
 

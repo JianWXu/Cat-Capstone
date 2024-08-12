@@ -1,4 +1,4 @@
-import UserContext from "../../../UserContext";
+import UserContext from "../../../UserContextTEMP";
 import React, { useEffect, useState, useContext } from 'react';
 import CatsLikedCarousel from './CatsLikedCarousel';
 import CatApi from '../../../api';

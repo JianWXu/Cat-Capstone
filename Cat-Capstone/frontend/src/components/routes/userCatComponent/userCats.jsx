@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import UserContext from "../../../UserContext";
+import UserContext from "../../../UserContextTEMP";
 import { Link } from "react-router-dom";
 import CatApi from '../../../api';
 import './userCats.css';
